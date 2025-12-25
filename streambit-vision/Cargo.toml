@@ -10,9 +10,10 @@ keywords = ["image", "video", "computer-vision", "ml", "ai"]
 
 [dependencies]
 streambit-core = { path = "../streambit-core" }
-image = { workspace = true }
-rayon = { workspace = true }
-ndarray = { workspace = true }
+image = "0.25"
+rayon = "1.8"
+ndarray = "0.15"
+imageproc = "0.24"
 log = { workspace = true }
 
 [dev-dependencies]

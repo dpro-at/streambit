@@ -37,9 +37,27 @@
   - [x] `load_images_parallel()` - Batch image loading with Rayon
   - [x] `resize_batch()` - SIMD-accelerated resizing
   - [x] `to_ndarray()` - Convert to CHW format (Channel-Height-Width)
-  - [x] Support for JPEG, PNG, WebP formats
+  - [x] Support for JPEG, PNG, WebP, GIF, BMP formats
   - [x] `load_batch_stacked()` - 4D tensor output (NCHW)
   - [x] `get_image_info()` - Quick image metadata
+  - [x] Multi-format output (JPG, PNG, WebP, BMP)
+- [x] Implement `src/enhancements.rs` - Image Enhancements:
+  - [x] Brightness adjustment
+  - [x] Contrast adjustment
+  - [x] Rotation (90°, 180°, 270°)
+  - [x] Flip (horizontal/vertical)
+  - [x] Crop
+  - [x] Grayscale conversion
+- [x] Implement `src/filters.rs` - Image Filters:
+  - [x] Blur (Gaussian)
+  - [x] Sharpen
+  - [x] Edge detection (Sobel)
+  - [x] Emboss effect
+  - [x] Custom kernel support
+- [x] Implement `src/batch_ops.rs` - Batch Operations:
+  - [x] Apply watermark
+  - [x] Normalize colors
+  - [x] Auto-enhance
 - [ ] Implement `src/video.rs`:
   - [ ] `VideoProcessor` struct
   - [ ] `extract_frames()` - FFmpeg-based frame extraction
@@ -50,6 +68,7 @@
 - [x] Test with real images (successful - 88 images/sec in debug mode)
 - [x] Fix all compilation errors and warnings
 - [x] Add documentation comments
+- [x] Add comprehensive tests (15/15 passing)
 - [ ] Add benchmarks for image loading performance (TODO)
 
 ### 1.4 Audio Module (`streambit-audio/`)

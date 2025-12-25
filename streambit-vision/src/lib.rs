@@ -26,9 +26,18 @@
 //! ```
 
 pub mod image_proc;
+pub mod enhancements;
+pub mod filters;
+pub mod batch_ops;
 
 // Re-export main types
 pub use image_proc::{ImageProcessor, ResizeMode};
+pub use enhancements::{
+    adjust_brightness, adjust_contrast, rotate, flip_horizontal, flip_vertical,
+    crop, to_grayscale, RotationAngle
+};
+pub use filters::{gaussian_blur, sharpen, edge_detection, emboss};
+pub use batch_ops::{apply_watermark, normalize_colors, auto_enhance};
 
 #[cfg(test)]
 mod tests {

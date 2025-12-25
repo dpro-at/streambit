@@ -34,6 +34,10 @@ enum Commands {
         /// Save processed images to output folder
         #[arg(short, long)]
         save_output: Option<String>,
+
+        /// Output format: jpg, png, webp, bmp (default: jpg)
+        #[arg(short, long, default_value = "jpg")]
+        format: String,
     },
 }
 
@@ -47,13 +51,14 @@ fn main() {
             height,
             mode,
             save_output,
+            format,
         } => {
-            process_folder(&path, width, height, &mode, save_output.as_deref());
+            process_folder(&path, width, height, &mode, save_output.as_deref(), &format);
         }
     }
 }
 
-fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, save_output: Option<&str>) {
+fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, save_output: Option<&str>, format_str: &str) {
     println!("{}", "🚀 StreamBit Image Processor".bright_cyan().bold());
     println!("{}", "=".repeat(60).bright_black());
 
@@ -66,6 +71,19 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
         _ => {
             eprintln!("{} Invalid resize mode. Using bilinear.", "⚠️".yellow());
             ResizeMode::Bilinear
+        }
+    };
+
+    // Parse output format
+    use image::ImageFormat;
+    let (output_format, file_ext) = match format_str.to_lowercase().as_str() {
+        "png" => (ImageFormat::Png, "png"),
+        "webp" => (ImageFormat::WebP, "webp"),
+        "bmp" => (ImageFormat::Bmp, "bmp"),
+        "jpg" | "jpeg" => (ImageFormat::Jpeg, "jpg"),
+        _ => {
+            eprintln!("{} Invalid format '{}'. Using jpg.", "⚠️".yellow(), format_str);
+            (ImageFormat::Jpeg, "jpg")
         }
     };
 
@@ -103,6 +121,7 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
     
     if let Some(output_dir) = save_output {
         println!("💾 Output directory: {}", output_dir.bright_yellow());
+        println!("📄 Output format: {}", file_ext.to_uppercase().bright_cyan());
         // Create output directory
         if let Err(e) = fs::create_dir_all(output_dir) {
             eprintln!("{} Failed to create output directory: {}", "❌".red(), e);
@@ -113,9 +132,7 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
     println!("{}", "=".repeat(60).bright_black());
 
     // Process images
-    println!("⚡ Processing images...");
     let start = Instant::now();
-
     let processor = ImageProcessor::new().with_resize_mode(resize_mode);
 
     match processor.load_batch(image_files.clone(), Some((width, height)), None) {
@@ -124,19 +141,18 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
             let time_ms = duration.as_secs_f64() * 1000.0;
             let throughput = batch.len() as f64 / duration.as_secs_f64();
 
+            println!("{}", "✅ Processing Complete!".bright_green().bold());
             println!("{}", "=".repeat(60).bright_black());
-            println!("{} {}", "✅".green(), "Processing Complete!".bright_green().bold());
-            println!("{}", "=".repeat(60).bright_black());
-            
-            println!("📊 Results:");
-            println!("   Images Processed: {}", batch.len().to_string().bright_cyan());
-            println!("   Time: {} ms", format!("{:.2}", time_ms).bright_yellow());
-            println!("   Throughput: {} images/sec", format!("{:.0}", throughput).bright_magenta());
+            println!("📊 {} Processed: {}", "Images".bright_white(), batch.len().to_string().bright_cyan());
+            println!("⏱️  {} {:.2} ms", "Time:".bright_white(), time_ms.to_string().bright_cyan());
+            println!("🚀 {} {:.2} images/sec", "Throughput:".bright_white(), throughput.to_string().bright_green().bold());
             
             println!("\n📐 Tensor Info:");
-            println!("   Shape: {:?} (C, H, W)", batch.tensors()[0].shape());
+            if let Some(first) = batch.tensors().first() {
+                let shape = first.shape();
+                println!("   Shape: [{}, {}, {}] (C, H, W)", shape[0], shape[1], shape[2]);
+            }
             println!("   Total Tensors: {}", batch.len());
-            
             let total_elements: usize = batch.tensors().iter().map(|t| t.len()).sum();
             let memory_mb = (total_elements * 4) as f64 / 1_000_000.0;
             println!("   Memory: {:.2} MB", memory_mb);
@@ -151,7 +167,7 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
                 for (idx, tensor) in batch.tensors().iter().enumerate() {
                     // Convert from CHW to HWC format for saving
                     let shape = tensor.shape();
-                    let (c, h, w) = (shape[0], shape[1], shape[2]);
+                    let (_c, h, w) = (shape[0], shape[1], shape[2]);
                     
                     let mut img_buffer = ImageBuffer::<Rgb<u8>, Vec<u8>>::new(w as u32, h as u32);
                     
@@ -166,8 +182,12 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
                         }
                     }
                     
-                    let output_path = format!("{}/processed_{:04}.jpg", output_dir, idx);
-                    if let Err(e) = img_buffer.save(&output_path) {
+                    let output_path = format!("{}/processed_{:04}.{}", output_dir, idx, file_ext);
+                    
+                    // Save with specific format
+                    let save_result = img_buffer.save_with_format(&output_path, output_format);
+                    
+                    if let Err(e) = save_result {
                         eprintln!("{} Failed to save {}: {}", "⚠️".yellow(), output_path, e);
                     } else {
                         if idx < 5 {
@@ -176,13 +196,13 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, sa
                     }
                 }
                 
-                println!("✅ Saved {} images to {}", batch.len(), output_dir.bright_green());
+                println!("✅ Saved {} images to {} as {}", batch.len(), output_dir.bright_green(), file_ext.to_uppercase().bright_cyan());
             }
             
             println!("{}", "=".repeat(60).bright_black());
         }
         Err(e) => {
-            eprintln!("{} Error processing images: {}", "❌".red(), e);
+            eprintln!("{} Processing failed: {}", "❌".red(), e);
             std::process::exit(1);
         }
     }

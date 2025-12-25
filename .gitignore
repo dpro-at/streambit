@@ -85,6 +85,19 @@ verified_output/
 hq_output/
 processed_images/
 processed_photos/
+test_png/
+test_jpg/
+test_webp/
+test_bmp/
+test_gif/
+test_mp4/
+test_mp3/
+test_wav/
+test_flac/
+test_pdf/
+test_docx/
+test_csv/
+test_parquet/
 
 # Test data and sample files (uncomment specific formats if needed)
 # *.png

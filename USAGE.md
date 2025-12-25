@@ -51,6 +51,95 @@ cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" 
 cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" --save-output "output_folder"
 ```
 
+#### 4. Choose Output Format
+```bash
+# Options: jpg, png, webp, bmp (default: jpg)
+cargo run --release -p streambit-cli -- process-folder "my_folder" --save-output "output" --format png
+```
+
+---
+
+## 🎨 Advanced Image Features
+
+StreamBit includes powerful image enhancement, filtering, and batch operations capabilities.
+
+### Image Enhancements
+
+#### Brightness & Contrast
+```rust
+use streambit_vision::{adjust_brightness, adjust_contrast};
+
+// Increase brightness by 20%
+let brighter = adjust_brightness(&img, 1.2);
+
+// Increase contrast by 50%
+let contrasted = adjust_contrast(&img, 1.5);
+```
+
+#### Rotation & Flipping
+```rust
+use streambit_vision::{rotate, flip_horizontal, flip_vertical, RotationAngle};
+
+// Rotate 90 degrees
+let rotated = rotate(&img, RotationAngle::Rotate90);
+
+// Flip horizontally (mirror)
+let flipped = flip_horizontal(&img);
+```
+
+#### Cropping & Grayscale
+```rust
+use streambit_vision::{crop, to_grayscale};
+
+// Crop to region
+let cropped = crop(&img, 100, 100, 500, 500)?;
+
+// Convert to grayscale
+let gray = to_grayscale(&img);
+```
+
+### Image Filters
+
+#### Blur & Sharpen
+```rust
+use streambit_vision::{gaussian_blur, sharpen};
+
+// Apply Gaussian blur
+let blurred = gaussian_blur(&img, 2.5);
+
+// Sharpen image
+let sharp = sharpen(&img);
+```
+
+#### Edge Detection
+```rust
+use streambit_vision::edge_detection;
+
+// Detect edges using Sobel operator
+let edges = edge_detection(&img);
+```
+
+### Batch Operations
+
+#### Watermarking
+```rust
+use streambit_vision::apply_watermark;
+
+// Add watermark at position (50, 50) with 50% opacity
+let watermarked = apply_watermark(&img, &watermark, 50, 50, 0.5)?;
+```
+
+#### Color Normalization & Auto-Enhance
+```rust
+use streambit_vision::{normalize_colors, auto_enhance};
+
+// Normalize color values to full 0-255 range
+let normalized = normalize_colors(&img);
+
+// Automatic enhancement (brightness + contrast + normalization)
+let enhanced = auto_enhance(&img);
+```
+
 ### Complete Examples
 
 #### Example 1: Simple Processing
@@ -151,6 +240,24 @@ cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" 
 .\benchmark_compare.ps1 -TargetFolder "benchmarks\data\images"
 ```
 
+### Scenario 5: Format Conversion
+```bash
+# Convert PNG to JPG
+cargo run --release -p streambit-cli -- process-folder "png_images" --save-output "jpg_output" --format jpg
+
+# Convert to WebP (smaller file size)
+cargo run --release -p streambit-cli -- process-folder "photos" --save-output "webp_output" --format webp
+
+# Convert to PNG (lossless)
+cargo run --release -p streambit-cli -- process-folder "images" --save-output "png_output" --format png
+```
+
+### Scenario 6: Batch Processing with Resize
+```bash
+# Resize 1000 images to thumbnails (300x300) and save as WebP
+cargo run --release -p streambit-cli -- process-folder "originals" --width 300 --height 300 --format webp --save-output "thumbnails"
+```
+
 ---
 
 ## 🔧 Tips & Tricks
@@ -173,6 +280,12 @@ cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" 
 - Each 224x224 RGB image = ~600 KB in memory
 - 1000 images = ~600 MB
 - System uses Zero-Copy to minimize consumption
+
+### 5. Output Format Selection
+- **JPG**: Smallest file size, lossy compression (best for photos)
+- **PNG**: Lossless compression, larger files (best for graphics/screenshots)
+- **WebP**: Modern format, smaller than JPG with better quality
+- **BMP**: Uncompressed, largest files (best for editing)
 
 ---
 
@@ -200,15 +313,29 @@ cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" 
 
 ---
 
-## 🚀 Next Steps
+## 🚀 Current Features
 
-After mastering image processing, you can:
-1. Explore **Audio Module** (coming soon)
-2. Integrate StreamBit with PyTorch/TensorFlow
-3. Build production applications with blazing speed
+StreamBit Vision Module includes:
+1. ✅ **High-Speed Image Loading** - 3000+ images/sec
+2. ✅ **Multi-Format Support** - JPG, PNG, WebP, BMP, GIF
+3. ✅ **Format Conversion** - Convert between any supported formats
+4. ✅ **Image Enhancements** - Brightness, contrast, rotation, flip, crop, grayscale
+5. ✅ **Image Filters** - Blur, sharpen, edge detection, emboss
+6. ✅ **Batch Operations** - Watermark, normalize, auto-enhance
+7. ✅ **ML-Ready Output** - Direct tensor conversion for PyTorch/TensorFlow
+8. ✅ **Web UI & CLI** - Multiple interfaces for different workflows
+
+## 🔮 Coming Soon
+
+- **Audio Module** - High-speed audio processing
+- **Video Module** - Frame extraction and processing (requires FFmpeg)
+- **Python Bindings** - Use StreamBit from Python directly
+- **Text Module** - PDF, DOCX, CSV processing
 
 ---
 
 **Created by**: StreamBit Team  
 **Date**: 2025-12-25  
-**Version**: v0.1.0-alpha
+**Version**: v0.1.0-alpha  
+**Status**: Vision Module Complete ✅
+
