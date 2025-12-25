@@ -1,0 +1,18 @@
+[package]
+name = "streambit-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "StreamBit CLI for processing images from folders"
+
+[dependencies]
+streambit-vision = { path = "../streambit-vision" }
+streambit-core = { path = "../streambit-core" }
+clap = { version = "4.4", features = ["derive"] }
+colored = "2.1"
+
+[[bin]]
+name = "streambit"
+path = "src/main.rs"
