@@ -77,6 +77,15 @@ benchmarks/*.json
 benchmarks/*.csv
 dashboard/.streamlit/
 
+# Test output folders
+output_test/
+output*/
+processed_*/
+verified_output/
+hq_output/
+processed_images/
+processed_photos/
+
 # Test data and sample files (uncomment specific formats if needed)
 # *.png
 # *.jpg

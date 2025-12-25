@@ -12,6 +12,7 @@ streambit-vision = { path = "../streambit-vision" }
 streambit-core = { path = "../streambit-core" }
 clap = { version = "4.4", features = ["derive"] }
 colored = "2.1"
+image = "0.25"
 
 [[bin]]
 name = "streambit"

@@ -30,6 +30,10 @@ enum Commands {
         /// Resize mode: nearest, bilinear, bicubic, lanczos3 (default: bilinear)
         #[arg(short, long, default_value = "bilinear")]
         mode: String,
+
+        /// Save processed images to output folder
+        #[arg(short, long)]
+        save_output: Option<String>,
     },
 }
 
@@ -42,13 +46,14 @@ fn main() {
             width,
             height,
             mode,
+            save_output,
         } => {
-            process_folder(&path, width, height, &mode);
+            process_folder(&path, width, height, &mode, save_output.as_deref());
         }
     }
 }
 
-fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str) {
+fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str, save_output: Option<&str>) {
     println!("{}", "🚀 StreamBit Image Processor".bright_cyan().bold());
     println!("{}", "=".repeat(60).bright_black());
 
@@ -95,6 +100,16 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str) {
 
     println!("✅ Found {} images", image_files.len().to_string().bright_green());
     println!("🔧 Settings: {}x{}, Mode: {}", width, height, mode_str);
+    
+    if let Some(output_dir) = save_output {
+        println!("💾 Output directory: {}", output_dir.bright_yellow());
+        // Create output directory
+        if let Err(e) = fs::create_dir_all(output_dir) {
+            eprintln!("{} Failed to create output directory: {}", "❌".red(), e);
+            std::process::exit(1);
+        }
+    }
+    
     println!("{}", "=".repeat(60).bright_black());
 
     // Process images
@@ -125,6 +140,44 @@ fn process_folder(folder_path: &str, width: u32, height: u32, mode_str: &str) {
             let total_elements: usize = batch.tensors().iter().map(|t| t.len()).sum();
             let memory_mb = (total_elements * 4) as f64 / 1_000_000.0;
             println!("   Memory: {:.2} MB", memory_mb);
+            
+            // Save images if output directory specified
+            if let Some(output_dir) = save_output {
+                println!("{}", "=".repeat(60).bright_black());
+                println!("{}", "💾 Saving processed images...".bright_yellow());
+                
+                use image::{ImageBuffer, Rgb};
+                
+                for (idx, tensor) in batch.tensors().iter().enumerate() {
+                    // Convert from CHW to HWC format for saving
+                    let shape = tensor.shape();
+                    let (c, h, w) = (shape[0], shape[1], shape[2]);
+                    
+                    let mut img_buffer = ImageBuffer::<Rgb<u8>, Vec<u8>>::new(w as u32, h as u32);
+                    
+                    let data = tensor.data();
+                    
+                    for y in 0..h {
+                        for x in 0..w {
+                            let r = (data[[0, y, x]] * 255.0) as u8;
+                            let g = (data[[1, y, x]] * 255.0) as u8;
+                            let b = (data[[2, y, x]] * 255.0) as u8;
+                            img_buffer.put_pixel(x as u32, y as u32, Rgb([r, g, b]));
+                        }
+                    }
+                    
+                    let output_path = format!("{}/processed_{:04}.jpg", output_dir, idx);
+                    if let Err(e) = img_buffer.save(&output_path) {
+                        eprintln!("{} Failed to save {}: {}", "⚠️".yellow(), output_path, e);
+                    } else {
+                        if idx < 5 {
+                            println!("  ✓ Saved: {}", output_path.bright_white());
+                        }
+                    }
+                }
+                
+                println!("✅ Saved {} images to {}", batch.len(), output_dir.bright_green());
+            }
             
             println!("{}", "=".repeat(60).bright_black());
         }
