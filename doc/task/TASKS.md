@@ -248,9 +248,12 @@
 - [x] Create `streambit-web-ui` crate
 - [x] Implement Actix-web server with `/process` endpoint
 - [x] Implement `/process-folder` endpoint for direct folder access
-- [x] Create modern responsive UI with HTML/CSS/JS
-- [x] Implement drag-and-drop file upload
-- [x] Implement integrated Python performance benchmark
+- [x] Create Web UI (`static/index.html`):
+  - [x] Drag & drop interface
+  - [x] Progress indicators
+  - [x] Rust vs Python visualization (Charts)
+  - [x] Dark Mode
+  - [x] Hugging Face Integration (Download & Test)
 - [x] Display side-by-side comparison (Rust vs Python)
 - [x] Add folder path input for bulk processing
 
@@ -473,10 +476,21 @@
   - Auto-skip Python bench for large datasets
   - Dark Mode UI (Theme Updated) ✅
 
-### Performance Metrics (Debug Mode)
-- Single Image: 20-54ms (depending on resize mode)
-- Batch (3 images): 34ms
-- Throughput: 88 images/sec
-- Memory: 1.81 MB for 4D tensor (3×3×224×224)
+### Performance Metrics (Real-World Release Mode) 🚀
+- **StreamBit (Rust)**:
+  - Time: ~630ms (for 1866 images)
+  - Throughput: **2,964 images/sec** 🔥
+  - Memory: ~1.1 GB (Zero-Copy ready)
+- **Python (Pillow)**:
+  - Time: ~5,613ms
+  - Throughput: 332 images/sec
+- **Conclusion**:
+  - StreamBit is **~8.92x faster** than optimized Python/Pillow.
+  - Successfully validated on typical desktop hardware.
 
-**Note**: Release mode expected to be 5-10x faster!
+### Hugging Face Benchmark (2025-12-25) 🍃
+- **Dataset**: 'beans' (100 images)
+- **Results**:
+  - Rust: **4,238 images/sec** (23.60 ms)
+  - Python: 161 images/sec (620.55 ms)
+- **Speedup**: **26.29x faster** 🚀

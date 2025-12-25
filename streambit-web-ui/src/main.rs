@@ -219,43 +219,148 @@ fn run_python_benchmark(files: &[String]) -> (Option<f64>, Option<f64>, Option<f
     use std::process::Command;
     // use std::time::Duration;
 
-    // Skip Python benchmark for large batches (too slow)
-    if files.len() > 100 {
+    // Skip Python benchmark for very large batches (too slow)
+    // Increased to 5000 to allow benchmarking your 1865 images
+    if files.len() > 5000 {
         println!("Skipping Python benchmark for {} images (too many)", files.len());
         return (None, None, None);
     }
 
-    // Try different Python commands
+    // Try different Python commands (prioritizing user's explicit path)
     let python_commands = vec![
+        r"C:\Users\Dpro GmbH\AppData\Local\Programs\Python\Python312\python.exe",
         "python",
         "python3",
-        r"C:\Users\Dpro GmbH\AppData\Local\Programs\Python\Python312\python.exe",
     ];
 
-    for python_cmd in python_commands {
-        let output = Command::new(python_cmd)
-            .arg("streambit-web-ui/benchmark_python.py")
-            .args(files)
-            .output();
+    let mut collected_errors = Vec::new();
 
-        match output {
-            Ok(output) if output.status.success() => {
-                let stdout = String::from_utf8_lossy(&output.stdout);
-                if let Ok(result) = serde_json::from_str::<serde_json::Value>(&stdout) {
-                    let py_time = result["time_ms"].as_f64();
-                    let py_throughput = result["throughput"].as_f64();
-                    
-                    if let (Some(py_t), Some(py_tp)) = (py_time, py_throughput) {
-                        return (Some(py_t), Some(py_tp), None);
+    for python_cmd in python_commands {
+        use std::process::Stdio;
+
+        // Try to spawn the process (removed mut per warning)
+        let child_process = Command::new(python_cmd)
+            .arg("streambit-web-ui/benchmark_python.py")
+            .arg("--json-stdin")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn();
+
+        match child_process {
+            Ok(mut child) => {
+                // Write files JSON to stdin
+                if let Some(mut stdin) = child.stdin.take() {
+                    if let Ok(json_data) = serde_json::to_string(files) {
+                        let _ = stdin.write_all(json_data.as_bytes());
+                    }
+                }
+
+                // Wait for output
+                match child.wait_with_output() {
+                    Ok(output) if output.status.success() => {
+                        let stdout = String::from_utf8_lossy(&output.stdout);
+                        if let Ok(result) = serde_json::from_str::<serde_json::Value>(&stdout) {
+                            let py_time = result["time_ms"].as_f64();
+                            let py_throughput = result["throughput"].as_f64();
+                            
+                            if let (Some(py_t), Some(py_tp)) = (py_time, py_throughput) {
+                                return (Some(py_t), Some(py_tp), None);
+                            }
+                        }
+                    }
+                    Ok(output) => {
+                        collected_errors.push(format!("Cmd '{}' failed with stderr: {}", python_cmd, String::from_utf8_lossy(&output.stderr)));
+                    }
+                    Err(e) => {
+                        collected_errors.push(format!("Cmd '{}' failed to wait: {}", python_cmd, e));
                     }
                 }
             }
-            _ => continue,
+            Err(e) => {
+                collected_errors.push(format!("Cmd '{}' failed to start: {}", python_cmd, e));
+            }
         }
     }
     
-    // If Python is not available, return None (comparison will be skipped)
+    // If we're here, all failed. Print debug errors.
+    println!("⚠️  Python benchmark skipped (all commands failed):");
+    for err in collected_errors {
+        println!("  - {}", err);
+    }
+    
+    // Return None (comparison will be skipped)
     (None, None, None)
+}
+
+#[derive(serde::Deserialize)]
+struct DownloadRequest {
+    limit: usize,
+    dataset: String,
+}
+
+#[derive(serde::Serialize)]
+struct DownloadResult {
+    success: bool,
+    message: String,
+    path: Option<String>,
+}
+
+async fn download_dataset(req: web::Json<DownloadRequest>) -> Result<HttpResponse> {
+    use std::process::Command;
+    
+    // Path to the python script
+    let script_path = "benchmarks/download_dataset.py";
+    
+    // We need to run this with the user's python
+    // For simplicity, we'll use the same logic as benchmark to find python
+    // Ideally this should be a shared function
+    let python_commands = vec![
+        r"C:\Users\Dpro GmbH\AppData\Local\Programs\Python\Python312\python.exe",
+        "python",
+        "python3",
+    ];
+
+    let mut last_error = String::from("No python command tried yet");
+
+    for python_cmd in python_commands {
+        println!("Trying to run python script with: {}", python_cmd);
+        
+        let output = Command::new(python_cmd)
+            .arg(script_path)
+            .arg("--limit")
+            .arg(req.limit.to_string())
+            .arg("--dataset")
+            .arg(&req.dataset)
+            .output();
+
+       match output {
+           Ok(out) => {
+               if out.status.success() {
+                   return Ok(HttpResponse::Ok().json(DownloadResult {
+                       success: true,
+                       message: format!("Successfully downloaded {} images from '{}'", req.limit, req.dataset),
+                       path: Some("benchmarks/data/images".to_string()),
+                   }));
+               } else {
+                   let stderr = String::from_utf8_lossy(&out.stderr);
+                   let stdout = String::from_utf8_lossy(&out.stdout);
+                   last_error = format!("Status failure. Stderr: {}. Stdout: {}", stderr, stdout);
+                   println!("Python command failed: {}", last_error);
+               }
+           }
+           Err(e) => {
+               last_error = format!("Failed to spawn command: {}", e);
+               println!("Spawn error: {}", last_error);
+           }
+       }
+    }
+
+    Ok(HttpResponse::InternalServerError().json(DownloadResult {
+        success: false,
+        message: format!("Failed to run Python script. Details: {}", last_error),
+        path: None,
+    }))
 }
 
 #[actix_web::main]
@@ -270,6 +375,7 @@ async fn main() -> std::io::Result<()> {
             .route("/", web::get().to(index))
             .route("/process", web::post().to(process_images))
             .route("/process-folder", web::post().to(process_folder))
+            .route("/api/download-dataset", web::post().to(download_dataset))
             .service(Files::new("/static", "./streambit-web-ui/static"))
     })
     .bind(("127.0.0.1", 8080))?

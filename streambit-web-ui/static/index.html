@@ -23,6 +23,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-background-clip: text;
+            background-clip: text;
             background-color: var(--bg-color);
             color: var(--text-primary);
             margin: 0;
@@ -226,6 +228,12 @@
 
         .file-list {
             margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px dashed var(--input-bg);
+            border-radius: 15px;
+            padding: 15px;
+            background: rgba(15, 52, 96, 0.2);
         }
 
         .file-item {
@@ -565,11 +573,14 @@
 
         <div class="card">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('upload')">
+                <button class="tab-btn active" data-tab="upload" onclick="switchTab('upload')">
                     <i class="fas fa-cloud-upload-alt"></i> Upload Files
                 </button>
-                <button class="tab-btn" onclick="switchTab('folder')">
+                <button class="tab-btn" data-tab="folder" onclick="switchTab('folder')">
                     <i class="fas fa-folder-open"></i> Select Folders
+                </button>
+                <button class="tab-btn" data-tab="benchmark" onclick="switchTab('benchmark')">
+                    <i class="fas fa-database"></i> Hugging Face
                 </button>
             </div>
 
@@ -590,20 +601,77 @@
                 </button>
             </div>
 
+            <div id="benchmark-tab" class="tab-content">
+                <div class="benchmark-section"
+                    style="padding: 20px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;">
+                        <h2
+                            style="margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5em;">🍃</span> Hugging Face Benchmark
+                        </h2>
+                        <span class="badge"
+                            style="background: #FFD700; color: #000; padding: 6px 12px; border-radius: 6px; font-weight: bold;">New</span>
+                    </div>
+
+                    <div
+                        style="background: rgba(15, 52, 96, 0.4); padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid var(--accent);">
+                        <p style="color: var(--text-primary); margin: 0; font-size: 1.1em;">
+                            Download standard datasets directly from Hugging Face to test StreamBit's true speed.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                        <div style="flex: 2; min-width: 200px;">
+                            <label
+                                style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Dataset</label>
+                            <select id="dataset-select"
+                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 1em;">
+                                <option value="beans">Beans (Leaf Images) - Standard Benchmark</option>
+                            </select>
+                        </div>
+
+                        <div style="flex: 1; min-width: 120px;">
+                            <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Image
+                                Count</label>
+                            <select id="limit-select"
+                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 1em;">
+                                <option value="100">100 Images</option>
+                                <option value="500">500 Images</option>
+                                <option value="1000">1000 Images</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="download-btn" onclick="downloadDataset()"
+                        style="width: 100%; background: linear-gradient(135deg, #48BB78 0%, #38A169 100%); color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.1em; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                        <i class="fas fa-download"></i> Download & Test
+                    </button>
+
+                    <div id="download-status"
+                        style="margin-top: 20px; font-size: 1em; display: none; padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.2);">
+                    </div>
+                </div>
+            </div>
+
             <div id="folder-tab" class="tab-content">
                 <div class="folder-input-area">
                     <div class="path-input-box">
                         <div class="picker-text" style="margin-bottom: 20px;">
                             <i class="fas fa-folder-open"></i> Enter Folder Paths
                         </div>
+
                         <div class="picker-hint" style="margin-bottom: 20px;">
                             Add multiple folder paths to process sequentially
                         </div>
 
                         <div id="pathInputsContainer">
+
+
                             <div class="input-group">
                                 <i class="fas fa-folder"></i>
-                                <input type="text" class="folder-input" placeholder="C:\Users\YourName\Pictures">
+                                <input type="text" id="folder-path" class="folder-input"
+                                    placeholder="C:\Users\YourName\Pictures">
                             </div>
                         </div>
 
@@ -625,8 +693,12 @@
     <script>
         function switchTab(tab) {
             // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.closest('.tab-btn').classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tab) {
+                    btn.classList.add('active');
+                }
+            });
 
             // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -648,6 +720,67 @@
                 </button>
             `;
             container.appendChild(div);
+        }
+
+        async function downloadDataset() {
+            const btn = document.getElementById('download-btn');
+            const status = document.getElementById('download-status');
+            const pathInput = document.getElementById('folder-path');
+            const limit = document.getElementById('limit-select').value;
+            const dataset = document.getElementById('dataset-select').value;
+
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner"></span> Downloading...`;
+            status.style.display = 'block';
+            status.style.color = 'var(--text-secondary)';
+            status.innerText = 'Connecting to Hugging Face...';
+
+            try {
+                const response = await fetch('/api/download-dataset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        limit: parseInt(limit),
+                        dataset: dataset
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    status.style.color = '#48BB78'; // Green
+                    status.innerHTML = `✅ <b>Success!</b> Downloaded to: <code>${result.path}</code>`;
+
+                    // Auto-fill path
+                    if (pathInput) {
+                        pathInput.value = result.path;
+                        // Flash the path input to draw attention
+                        pathInput.style.borderColor = '#48BB78';
+                        setTimeout(() => pathInput.style.borderColor = '', 1000);
+                    }
+
+                    // Switch to folder tab after small delay
+                    setTimeout(() => {
+                        switchTab('folder');
+                    }, 1500);
+
+                    // Reset button
+                    btn.innerHTML = '⬇️ Download & Test';
+                    btn.disabled = false;
+
+                } else {
+                    throw new Error(result.message);
+                }
+
+            } catch (error) {
+                console.error(error);
+                status.style.color = '#F56565';
+                status.innerText = `❌ Error: ${error.message}`;
+                btn.innerHTML = '⬇️ Download & Test';
+                btn.disabled = false;
+            }
         }
 
         async function processFromPath() {

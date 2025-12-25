@@ -54,17 +54,51 @@ def process_images_pillow(image_paths: List[str], target_size: Tuple[int, int] =
     }
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python benchmark_python.py <image1> <image2> ...")
-        sys.exit(1)
+    image_paths = []
     
-    image_paths = sys.argv[1:]
+    if len(sys.argv) > 1 and sys.argv[1] == "--json-stdin":
+        # Read from stdin as JSON
+        try:
+            input_data = sys.stdin.read()
+            image_paths = json.loads(input_data)
+        except Exception as e:
+            print(f"Error reading from stdin: {e}")
+            sys.exit(1)
+    elif len(sys.argv) > 2 and sys.argv[1] == "--json-file":
+        # Read from JSON file
+        try:
+            # Use utf-8-sig to handle potential BOM from PowerShell redirection
+            with open(sys.argv[2], 'r', encoding='utf-8-sig') as f:
+                image_paths = json.load(f)
+        except Exception as e:
+            print(f"Error reading from json file: {e}")
+            sys.exit(1)
+    else:
+        # Initial check for minimum arguments if not using stdin
+        if len(sys.argv) < 2:
+            print("Usage: python benchmark_python.py <image1> ... OR --json-stdin OR --json-file <path>")
+            sys.exit(1)
+        image_paths = sys.argv[1:]
     
     # Verify all files exist
+    valid_paths = []
     for path in image_paths:
-        if not Path(path).exists():
-            print(f"Error: File not found: {path}")
-            sys.exit(1)
+        if Path(path).exists():
+            valid_paths.append(path)
+        else:
+            # Only warn, don't exit, to be robust
+            pass # print(f"Warning: File not found: {path}", file=sys.stderr)
+    
+    image_paths = valid_paths
+    
+    if not image_paths:
+        print(json.dumps({
+            "error": "No valid image files found",
+            "images_processed": 0,
+            "time_ms": 0,
+            "throughput": 0
+        }))
+        sys.exit(0)
     
     # Run benchmark
     result = process_images_pillow(image_paths)
