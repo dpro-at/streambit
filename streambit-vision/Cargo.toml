@@ -17,3 +17,8 @@ log = { workspace = true }
 
 [dev-dependencies]
 env_logger = { workspace = true }
+
+[[example]]
+name = "image_processing_demo"
+path = "examples/image_processing_demo.rs"
+
