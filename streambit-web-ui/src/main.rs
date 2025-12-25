@@ -2,7 +2,7 @@ use actix_files::Files;
 use actix_multipart::Multipart;
 use actix_web::{web, App, HttpResponse, HttpServer, Result};
 use futures_util::TryStreamExt;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::io::Write;
 use std::time::Instant;
 use streambit_vision::{ImageProcessor, ResizeMode};
@@ -15,13 +15,9 @@ struct ProcessResult {
     time_ms: f64,
     throughput: f64,
     shapes: Vec<Vec<usize>>,
-}
-
-#[derive(Deserialize)]
-struct ProcessConfig {
-    resize_width: Option<u32>,
-    resize_height: Option<u32>,
-    resize_mode: Option<String>,
+    python_time_ms: Option<f64>,
+    python_throughput: Option<f64>,
+    speedup: Option<f64>,
 }
 
 async fn index() -> Result<HttpResponse> {
@@ -78,6 +74,9 @@ async fn process_images(mut payload: Multipart) -> Result<HttpResponse> {
                 .map(|t| t.shape().to_vec())
                 .collect();
 
+            // Run Python benchmark for comparison
+            let (python_time_ms, python_throughput, speedup) = run_python_benchmark(&temp_files);
+
             // Cleanup temp files
             for file in &temp_files {
                 std::fs::remove_file(file).ok();
@@ -90,6 +89,9 @@ async fn process_images(mut payload: Multipart) -> Result<HttpResponse> {
                 time_ms,
                 throughput,
                 shapes,
+                python_time_ms,
+                python_throughput,
+                speedup,
             }))
         }
         Err(e) => {
@@ -105,9 +107,40 @@ async fn process_images(mut payload: Multipart) -> Result<HttpResponse> {
                 time_ms: 0.0,
                 throughput: 0.0,
                 shapes: vec![],
+                python_time_ms: None,
+                python_throughput: None,
+                speedup: None,
             }))
         }
     }
+}
+
+fn run_python_benchmark(files: &[String]) -> (Option<f64>, Option<f64>, Option<f64>) {
+    use std::process::Command;
+
+    let output = Command::new("python")
+        .arg("streambit-web-ui/benchmark_python.py")
+        .args(files)
+        .output();
+
+    match output {
+        Ok(output) if output.status.success() => {
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            if let Ok(result) = serde_json::from_str::<serde_json::Value>(&stdout) {
+                let py_time = result["time_ms"].as_f64();
+                let py_throughput = result["throughput"].as_f64();
+                
+                if let (Some(py_t), Some(py_tp)) = (py_time, py_throughput) {
+                    // Calculate speedup (Python time / Rust time would be in the caller)
+                    return (Some(py_t), Some(py_tp), None);
+                }
+            }
+        }
+        _ => {}
+    }
+    
+    (None, None, None)
+}
 }
 
 #[actix_web::main]
