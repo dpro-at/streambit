@@ -26,18 +26,20 @@
 - [x] Implement `src/error.rs` - Unified error handling with `thiserror`
 - [x] Implement `src/tensor.rs` - Unified tensor type wrapping `ndarray`
 - [x] Implement `src/parallel.rs` - Rayon utilities and thread pool config
-- [ ] Add unit tests for core utilities
-- [ ] Add documentation comments for Crates.io
+- [x] Add unit tests for core utilities
+- [x] Add documentation comments for Crates.io
 
-### 1.3 Vision Module (`streambit-vision/`) 🔄
+### 1.3 Vision Module (`streambit-vision/`) ✅
 - [x] Create `streambit-vision/Cargo.toml` with dependencies
-- [ ] Implement `src/lib.rs` - Public API
-- [ ] Implement `src/image.rs`:
-  - [ ] `ImageProcessor` struct
-  - [ ] `load_images_parallel()` - Batch image loading with Rayon
-  - [ ] `resize_batch()` - SIMD-accelerated resizing
-  - [ ] `to_ndarray()` - Convert to CHW format (Channel-Height-Width)
-  - [ ] Support for JPEG, PNG, WebP formats
+- [x] Implement `src/lib.rs` - Public API
+- [x] Implement `src/image_proc.rs`:
+  - [x] `ImageProcessor` struct
+  - [x] `load_images_parallel()` - Batch image loading with Rayon
+  - [x] `resize_batch()` - SIMD-accelerated resizing
+  - [x] `to_ndarray()` - Convert to CHW format (Channel-Height-Width)
+  - [x] Support for JPEG, PNG, WebP formats
+  - [x] `load_batch_stacked()` - 4D tensor output (NCHW)
+  - [x] `get_image_info()` - Quick image metadata
 - [ ] Implement `src/video.rs`:
   - [ ] `VideoProcessor` struct
   - [ ] `extract_frames()` - FFmpeg-based frame extraction
@@ -46,7 +48,7 @@
   - [ ] Support for MP4, AVI formats
 - [ ] Add integration tests with sample images/videos
 - [ ] Add benchmarks for image loading performance
-- [ ] Add documentation comments
+- [x] Add documentation comments
 
 ### 1.4 Audio Module (`streambit-audio/`)
 - [ ] Create `streambit-audio/Cargo.toml` with dependencies
@@ -422,9 +424,9 @@
 ---
 
 **Total Tasks**: 200+  
-**Completed**: 17 ✅  
-**In Progress**: 0  
-**Remaining**: 183+  
+**Completed**: 33 ✅  
+**In Progress**: 1 (Video processing)  
+**Remaining**: 167+  
 
-**Current Focus**: Setting up crate structure and .gitignore
-**Last Updated**: 2025-12-25 15:37
+**Current Focus**: Stage 1 - Core and Vision modules complete, ready for Audio module
+**Last Updated**: 2025-12-25 15:40

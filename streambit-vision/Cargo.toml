@@ -1,0 +1,19 @@
+[package]
+name = "streambit-vision"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "High-performance image and video processing for StreamBit"
+keywords = ["image", "video", "computer-vision", "ml", "ai"]
+
+[dependencies]
+streambit-core = { path = "../streambit-core" }
+image = { workspace = true }
+rayon = { workspace = true }
+ndarray = { workspace = true }
+log = { workspace = true }
+
+[dev-dependencies]
+env_logger = { workspace = true }

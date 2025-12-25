@@ -125,5 +125,3 @@ node_modules/
 *.dylib
 *.dll
 *.exe
-
-doc/
