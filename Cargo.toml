@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "streambit-core",
     "streambit-vision",
+    "streambit-web-ui",
     # "streambit-audio",      # TODO: Not implemented yet
     # "streambit-text",       # TODO: Not implemented yet
     # "streambit-tabular",    # TODO: Not implemented yet
