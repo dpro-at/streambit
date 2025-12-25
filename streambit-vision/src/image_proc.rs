@@ -3,7 +3,7 @@
 //! This module provides the `ImageProcessor` struct which handles batch image
 //! loading with parallel processing using Rayon.
 
-use image::{DynamicImage, GenericImageView, ImageError, ImageFormat};
+use image::{DynamicImage, ImageFormat, ImageReader};
 use ndarray::{Array3, Array4, Axis};
 use rayon::prelude::*;
 use std::path::Path;
@@ -251,7 +251,7 @@ impl ImageProcessor {
         &self,
         path: P,
     ) -> Result<(u32, u32, ImageFormat)> {
-        let reader = image::io::Reader::open(path.as_ref()).map_err(|e| {
+        let reader = ImageReader::open(path.as_ref()).map_err(|e| {
             StreamBitError::Image(format!("Failed to open image: {}", e))
         })?;
 

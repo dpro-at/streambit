@@ -3,12 +3,12 @@ resolver = "2"
 members = [
     "streambit-core",
     "streambit-vision",
-    "streambit-audio",
-    "streambit-text",
-    "streambit-tabular",
-    "streambit-streaming",
-    "streambit-cli",
-    "streambit-python",
+    # "streambit-audio",      # TODO: Not implemented yet
+    # "streambit-text",       # TODO: Not implemented yet
+    # "streambit-tabular",    # TODO: Not implemented yet
+    # "streambit-streaming",  # TODO: Not implemented yet
+    # "streambit-cli",        # TODO: Not implemented yet
+    # "streambit-python",     # TODO: Not implemented yet
 ]
 
 [workspace.package]

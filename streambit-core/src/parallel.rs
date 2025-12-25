@@ -45,7 +45,7 @@ impl ParallelConfig {
     ///
     /// This sets the global thread pool size. Note that this can only be
     /// called once per process.
-    pub fn apply(&self) -> rayon::ThreadPoolBuildResult<()> {
+    pub fn apply(&self) -> Result<(), rayon::ThreadPoolBuildError> {
         if let Some(num_threads) = self.num_threads {
             rayon::ThreadPoolBuilder::new()
                 .num_threads(num_threads)
@@ -132,11 +132,6 @@ where
         .enumerate()
         .map(|(i, item)| f(i, item))
         .collect()
-}
-
-// Note: num_cpus is not in workspace dependencies, so we'll use rayon's thread count
-fn num_cpus_get() -> usize {
-    rayon::current_num_threads()
 }
 
 // Helper to get CPU count

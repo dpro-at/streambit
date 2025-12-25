@@ -4,7 +4,7 @@
 //! StreamBit modules. Tensors are the primary data structure for passing
 //! data to Python AI frameworks.
 
-use ndarray::{Array, Array3, ArrayD, Ix3};
+use ndarray::{Array3, ArrayD, Ix3};
 
 /// Unified tensor type wrapping ndarray
 ///

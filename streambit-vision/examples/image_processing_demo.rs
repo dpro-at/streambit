@@ -12,7 +12,7 @@ fn main() {
     env_logger::init();
 
     println!("🚀 StreamBit Vision - Image Processing Demo\n");
-    println!("=".repeat(60));
+    println!("{}", "=".repeat(60));
 
     // Create image processor
     let processor = ImageProcessor::new()
@@ -116,7 +116,7 @@ fn main() {
     }
     println!();
 
-    println!("=".repeat(60));
+    println!("{}", "=".repeat(60));
     println!("✅ Demo completed successfully!");
     println!("\n💡 Next steps:");
     println!("   - Try with your own images");

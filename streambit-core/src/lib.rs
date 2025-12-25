@@ -22,7 +22,7 @@ pub mod tensor;
 
 // Re-export commonly used types
 pub use error::{Result, StreamBitError};
-pub use tensor::Tensor;
+pub use tensor::{Tensor, TensorBatch};
 
 /// StreamBit version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
