@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamBit - High-Performance AI Data Pipeline</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #151932;
+            --bg-tertiary: #1e2139;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #7000ff;
+            --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #7000ff 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a8c5;
+            --border-color: #2a2f4a;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --error: #ff3366;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2em;
+        }
+
+        .version-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-primary);
+            border-radius: 20px;
+            color: var(--accent-primary);
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        /* Main Card */
+        .main-card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        /* Media Type Tabs */
+        .media-tabs {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .media-tab {
+            flex: 1;
+            padding: 25px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .media-tab:hover:not(:disabled) {
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--accent-primary);
+        }
+
+        .media-tab.active {
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        .media-tab:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .soon-badge {
+            font-size: 0.7em;
+            padding: 3px 8px;
+            background: #444;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+
+        /* Sub Tabs */
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sub-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sub-tab:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .sub-tab.active {
+            background: var(--accent-gradient);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Upload Area */
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 212, 255, 0.02);
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.3em;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        /* Slider */
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-primary);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Results */
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid var(--success);
+            border-radius: 12px;
+        }
+
+        .results h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+
+        /* Preview */
+        .preview-container {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 2px solid var(--accent-primary);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00b8e6;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .media-tabs {
+                flex-wrap: wrap;
+            }
+
+            .media-tab {
+                flex: 1 1 50%;
+            }
+
+            .sub-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-layer-group"></i> StreamBit
+            </div>
+            <div class="subtitle">High-Performance AI Data Pipeline in Rust</div>
+            <span class="version-badge">v0.1.0-alpha • Vision Complete</span>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <!-- Media Type Tabs -->
+            <div class="media-tabs">
+                <button class="media-tab active" onclick="switchMedia('vision')">
+                    <i class="fas fa-image"></i> 📸 Vision
+                </button>
+                <button class="media-tab" disabled>
+                    <i class="fas fa-music"></i> 🎵 Audio
+                    <span class="soon-badge">Soon</span>
+                </button>
+                <button class="media-tab" disabled>
+                    <i class="fas fa-video"></i> 🎬 Video
+                    <span class="soon-badge">Soon</span>
+                </button>
+                <button class="media-tab" disabled>
+                    <i class="fas fa-file-alt"></i> 📄 Text
+                    <span class="soon-badge">Soon</span>
+                </button>
+            </div>
+
+            <!-- Vision Module -->
+            <div id="vision-module">
+                <!-- Vision Sub-Tabs -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" onclick="switchTab('upload')">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload
+                    </button>
+                    <button class="sub-tab" onclick="switchTab('process')">
+                        <i class="fas fa-magic"></i> Process
+                    </button>
+                    <button class="sub-tab" onclick="switchTab('batch')">
+                        <i class="fas fa-layer-group"></i> Batch
+                    </button>
+                    <button class="sub-tab" onclick="switchTab('benchmark')">
+                        <i class="fas fa-chart-line"></i> Benchmark
+                    </button>
+                </div>
+
+                <!-- Upload Tab -->
+                <div id="upload-tab" class="tab-content active">
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Drag & Drop Images or Click to Browse</div>
+                        <div class="upload-hint">Supports: JPG, PNG, WebP, GIF, BMP</div>
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-bolt"></i> Process Images
+                    </button>
+                </div>
+
+                <!-- Process Tab -->
+                <div id="process-tab" class="tab-content">
+                    <div class="form-group">
+                        <label class="form-label">Upload Single Image</label>
+                        <input type="file" class="form-input" accept="image/*">
+                    </div>
+
+                    <!-- Enhancements -->
+                    <div class="section-card" style="border-left-color: #00ff88;">
+                        <div class="section-title" style="color: #00ff88;">
+                            <i class="fas fa-palette"></i> Enhancements
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Brightness: <span id="brightnessVal">1.0</span></label>
+                            <input type="range" min="0.5" max="2.0" step="0.1" value="1.0"
+                                oninput="document.getElementById('brightnessVal').textContent = this.value">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Contrast: <span id="contrastVal">1.0</span></label>
+                            <input type="range" min="0.5" max="2.0" step="0.1" value="1.0"
+                                oninput="document.getElementById('contrastVal').textContent = this.value">
+                        </div>
+
+                        <div class="grid grid-3">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-redo"></i> Rotate 90°
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-arrows-alt-h"></i> Flip H
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-arrows-alt-v"></i> Flip V
+                            </button>
+                        </div>
+
+                        <div style="margin-top: 15px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox">
+                                <span class="form-label" style="margin: 0;">Grayscale</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="section-card" style="border-left-color: #00d4ff;">
+                        <div class="section-title" style="color: #00d4ff;">
+                            <i class="fas fa-filter"></i> Filters
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Blur: <span id="blurVal">0</span></label>
+                            <input type="range" min="0" max="10" step="0.5" value="0"
+                                oninput="document.getElementById('blurVal').textContent = this.value">
+                        </div>
+
+                        <div class="grid grid-2">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-adjust"></i> Sharpen
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-border-style"></i> Edge Detect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="section-card" style="border-left-color: #7000ff;">
+                        <div class="section-title" style="color: #7000ff;">
+                            <i class="fas fa-bolt"></i> Quick Actions
+                        </div>
+
+                        <div class="grid grid-2">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-balance-scale"></i> Normalize
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-star"></i> Auto-Enhance
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-magic"></i> Apply & Preview
+                    </button>
+                </div>
+
+                <!-- Batch Tab -->
+                <div id="batch-tab" class="tab-content">
+                    <div class="form-group">
+                        <label class="form-label">Folder Path</label>
+                        <input type="text" class="form-input" placeholder="C:\Users\YourName\Pictures">
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-bolt"></i> Process All Folders
+                    </button>
+                </div>
+
+                <!-- Benchmark Tab -->
+                <div id="benchmark-tab" class="tab-content">
+                    <div class="section-card">
+                        <div class="section-title">
+                            <i class="fas fa-leaf"></i> Hugging Face Benchmark
+                        </div>
+
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Dataset</label>
+                                <select class="form-input">
+                                    <option>Beans (Leaf Images)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Image Count</label>
+                                <select class="form-input">
+                                    <option>100 Images</option>
+                                    <option>500 Images</option>
+                                    <option>1000 Images</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-download"></i> Download & Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchMedia(media) {
+            // Update media tabs
+            document.querySelectorAll('.media-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.media-tab').classList.add('active');
+        }
+
+        function switchTab(tab) {
+            // Update sub-tabs
+            document.querySelectorAll('.sub-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

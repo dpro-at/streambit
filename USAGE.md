@@ -48,6 +48,133 @@ cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" 
 
 #### 3. Save Processed Images (Visual Verification)
 ```bash
+cargo run --release -p streambit-cli -- process-folder "test_images" --save-output "output/processed" --format png
+```
+
+#### 4. Apply Image Filters
+
+**Brightness & Contrast:**
+```bash
+# Make images brighter and more contrasted
+cargo run --release -p streambit-cli -- process-folder "images" --brightness 1.5 --contrast 1.3 --save-output "output/enhanced"
+```
+
+**Blur & Sharpen:**
+```bash
+# Apply gaussian blur
+cargo run --release -p streambit-cli -- process-folder "images" --blur 2.5 --save-output "output/blurred"
+
+# Sharpen images
+cargo run --release -p streambit-cli -- process-folder "images" --sharpen --save-output "output/sharp"
+```
+
+**Transformations:**
+```bash
+# Rotate 90 degrees and flip horizontally
+cargo run --release -p streambit-cli -- process-folder "images" --rotate 90 --flip-h --save-output "output/rotated"
+
+# Convert to grayscale
+cargo run --release -p streambit-cli -- process-folder "images" --grayscale --save-output "output/grayscale"
+```
+
+**Edge Detection:**
+```bash
+# Detect edges using Sobel operator
+cargo run --release -p streambit-cli -- process-folder "images" --edge-detect --save-output "output/edges"
+```
+
+**Combine Multiple Filters:**
+```bash
+# Apply multiple filters at once
+cargo run --release -p streambit-cli -- process-folder "images" \
+  --brightness 1.2 \
+  --contrast 1.1 \
+  --sharpen \
+  --width 512 \
+  --height 512 \
+  --save-output "output/final" \
+  --format webp
+```
+
+**Clean Output Directory:**
+```bash
+# Remove old files before saving new ones
+cargo run --release -p streambit-cli -- process-folder "images" \
+  --save-output "output/processed" \
+  --clean
+
+# Clean is useful when you want fresh output without old files
+cargo run --release -p streambit-cli -- process-folder "images" \
+  --brightness 1.5 \
+  --save-output "output/enhanced" \
+  --clean \
+  --format png
+```
+
+---
+
+## 🎵 Audio Processing
+
+### Basic Command
+```bash
+cargo run --release -p streambit-cli -- process-audio <FOLDER_PATH>
+```
+
+### Available Options
+
+#### 1. Resample Audio
+```bash
+# Resample to 16kHz (common for speech recognition)
+cargo run --release -p streambit-cli -- process-audio "audio_folder" --sample-rate 16000 --save-output "output/audio"
+
+# Resample to 44.1kHz (CD quality)
+cargo run --release -p streambit-cli -- process-audio "audio_folder" --sample-rate 44100 --save-output "output/audio"
+```
+
+#### 2. Convert to Mono
+```bash
+# Convert stereo to mono
+cargo run --release -p streambit-cli -- process-audio "audio_folder" --mono --save-output "output/mono"
+```
+
+#### 3. Normalize Audio
+```bash
+# Normalize audio levels
+cargo run --release -p streambit-cli -- process-audio "audio_folder" --normalize --save-output "output/normalized"
+```
+
+#### 4. Trim Silence
+```bash
+# Remove silence from start and end (threshold: 0.01)
+cargo run --release -p streambit-cli -- process-audio "audio_folder" --trim-silence 0.01 --save-output "output/trimmed"
+```
+
+#### 5. Combine Multiple Operations
+```bash
+# Resample, convert to mono, normalize, and trim
+cargo run --release -p streambit-cli -- process-audio "audio_folder" \
+  --sample-rate 16000 \
+  --mono \
+  --normalize \
+  --trim-silence 0.01 \
+  --save-output "output/processed" \
+  --clean
+```
+
+#### 6. Full Example
+```bash
+cargo run --release -p streambit-cli -- process-audio "output/datasets/audio" \
+  --sample-rate 16000 \
+  --mono \
+  --normalize \
+  --save-output "output/processed_audio" \
+  --format wav
+```
+
+---
+
+#### 5. Full Example with All Options (Images)
+```bash
 cargo run --release -p streambit-cli -- process-folder "benchmarks\data\images" --save-output "output_folder"
 ```
 

@@ -70,17 +70,11 @@ coverage.xml
 *.sublime-project
 *.sublime-workspace
 
-# Benchmarks & Data
-benchmarks/data/
-benchmarks/results/
-benchmarks/*.json
-benchmarks/*.csv
+# Dashboard
 dashboard/.streamlit/
 
 # Test output folders
 output_test/
-output*/
-processed_*/
 verified_output/
 hq_output/
 processed_images/
@@ -98,6 +92,9 @@ test_pdf/
 test_docx/
 test_csv/
 test_parquet/
+
+# Output directory - keep structure, ignore contents
+output/
 
 # Test data and sample files (uncomment specific formats if needed)
 # *.png

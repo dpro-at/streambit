@@ -4,50 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamBit - High-Performance Image Processor</title>
+    <title>StreamBit - High-Performance AI Data Pipeline</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --bg-color: #1a1a2e;
-            --card-bg: #16213e;
-            --text-primary: #e6e6e6;
-            --text-secondary: #a0a0a0;
-            --accent: #e94560;
-            --accent-hover: #ff2e63;
-            --input-bg: #0f3460;
-            --border-color: #2a2a40;
-            --success: #00b894;
-            --warning: #fdcb6e;
-            --error: #ff7675;
+            --bg-primary: #0a0e27;
+            --bg-secondary: #151932;
+            --bg-tertiary: #1e2139;
+            --accent-primary: #00d4ff;
+            --accent-secondary: #7000ff;
+            --accent-gradient: linear-gradient(135deg, #00d4ff 0%, #7000ff 100%);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a8c5;
+            --border-color: #2a2f4a;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --error: #ff3366;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-background-clip: text;
-            background-clip: text;
-            background-color: var(--bg-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
-            margin: 0;
-            padding: 20px;
+            line-height: 1.6;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 20px;
         }
 
+        /* Header */
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 0;
+            padding: 40px 20px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
         }
 
         .logo {
-            font-size: 3.5em;
+            font-size: 3em;
             font-weight: 800;
-            background: linear-gradient(135deg, #e94560 0%, #a33b91 100%);
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
@@ -57,209 +67,366 @@
             font-size: 1.2em;
         }
 
-        .card {
-            background: var(--card-bg);
+        .version-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-primary);
             border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
+            color: var(--accent-primary);
+            font-size: 0.9em;
+            font-weight: 600;
         }
 
-        .tabs {
+        /* Main Card */
+        .main-card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        /* Media Type Tabs */
+        .media-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            background: var(--bg-tertiary);
             border-bottom: 2px solid var(--border-color);
         }
 
-        .tab-btn {
+        .media-tab {
             flex: 1;
-            padding: 15px 20px;
+            padding: 25px;
             background: transparent;
             border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
+            color: var(--text-secondary);
             font-size: 1.1em;
             font-weight: 600;
-            color: var(--text-secondary);
+            cursor: pointer;
             transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .tab-btn:hover {
-            color: var(--accent);
-            background: rgba(233, 69, 96, 0.05);
+        .media-tab:hover:not(:disabled) {
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--accent-primary);
         }
 
-        .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
+        .media-tab.active {
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
         }
 
+        .media-tab:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .soon-badge {
+            font-size: 0.7em;
+            padding: 3px 8px;
+            background: #444;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+
+        /* Sub Tabs */
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sub-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sub-tab:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .sub-tab.active {
+            background: var(--accent-gradient);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Tab Content */
         .tab-content {
             display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s ease;
         }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease;
         }
 
-        .folder-input-area {
-            margin-bottom: 20px;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .path-input-box {
-            background: rgba(15, 52, 96, 0.5);
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid var(--input-bg);
-        }
-
-        .picker-text {
-            color: var(--accent);
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .picker-hint {
-            color: var(--text-secondary);
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 5px;
-            margin-bottom: 10px;
-        }
-
-        .input-group i {
-            font-size: 1.3em;
-            color: var(--accent);
-        }
-
-        .folder-input {
-            flex: 1;
-            padding: 15px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 8px;
-            font-size: 1em;
-            font-family: 'Consolas', 'Monaco', monospace;
-            transition: border-color 0.3s;
-        }
-
-        .folder-input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .path-process-btn,
-        .process-btn {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #e94560 0%, #a33b91 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .path-process-btn:hover,
-        .process-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
-        }
-
-        .path-process-btn i,
-        .process-btn i {
-            margin-right: 8px;
-        }
-
-        .process-btn:disabled {
-            background: #2a2a40;
-            cursor: not-allowed;
-            color: #666;
-            box-shadow: none;
-        }
-
+        /* Upload Area */
         .upload-area {
-            border: 3px dashed var(--input-bg);
+            border: 3px dashed var(--border-color);
             border-radius: 15px;
-            padding: 50px 20px;
+            padding: 60px 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: rgba(15, 52, 96, 0.2);
+            background: rgba(0, 212, 255, 0.02);
         }
 
-        .upload-area:hover,
-        .upload-area.dragover {
-            border-color: var(--accent);
-            background: rgba(15, 52, 96, 0.4);
+        .upload-area:hover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 212, 255, 0.05);
         }
 
         .upload-icon {
             font-size: 4em;
-            color: var(--accent);
-            margin-bottom: 15px;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
         }
 
         .upload-text {
-            font-size: 1.2em;
-            font-weight: bold;
+            font-size: 1.3em;
             color: var(--text-primary);
+            margin-bottom: 10px;
         }
 
         .upload-hint {
             color: var(--text-secondary);
-            margin-top: 10px;
         }
 
-        input[type="file"] {
-            display: none;
-        }
-
-        .file-list {
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            border: 2px dashed var(--input-bg);
-            border-radius: 15px;
-            padding: 15px;
-            background: rgba(15, 52, 96, 0.2);
-        }
-
-        .file-item {
-            background: var(--bg-color);
-            padding: 15px;
+        /* Buttons */
+        .btn {
+            padding: 15px 30px;
+            border: none;
             border-radius: 10px;
-            margin-bottom: 10px;
-            display: flex;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
             border: 1px solid var(--border-color);
         }
 
-        .file-info {
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        /* Slider */
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--accent-primary);
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--accent-primary);
             display: flex;
             align-items: center;
+            gap: 10px;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
             gap: 15px;
         }
 
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Results */
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid var(--success);
+            border-radius: 12px;
+        }
+
+        .results h3 {
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+
+        /* Preview */
+        .preview-container {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 2px solid var(--accent-primary);
+            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00b8e6;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* File List */
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
         .file-icon {
-            color: var(--accent);
-            font-size: 1.5em;
+            font-size: 2em;
+            color: var(--accent-primary);
+        }
+
+        .file-info {
+            flex: 1;
         }
 
         .file-name {
+            color: var(--text-primary);
             font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .file-size {
@@ -268,22 +435,23 @@
         }
 
         .remove-btn {
-            background: none;
-            border: none;
+            padding: 8px 15px;
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 6px;
             color: var(--error);
             cursor: pointer;
-            padding: 5px;
-            transition: transform 0.2s;
+            transition: all 0.3s;
         }
 
         .remove-btn:hover {
-            transform: scale(1.1);
+            background: var(--error);
+            color: white;
         }
 
         /* Results Styles */
         .results {
             margin-top: 30px;
-            display: none;
         }
 
         .results.show {
@@ -299,7 +467,7 @@
         }
 
         .stat-card {
-            background: var(--bg-color);
+            background: var(--bg-tertiary);
             padding: 20px;
             border-radius: 15px;
             text-align: center;
@@ -308,7 +476,7 @@
 
         .stat-icon {
             font-size: 2em;
-            color: var(--accent);
+            color: var(--accent-primary);
             margin-bottom: 10px;
         }
 
@@ -326,7 +494,18 @@
             letter-spacing: 1px;
         }
 
-        /* Comparison Styles */
+        .success {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--success);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--success);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .comparison-section {
             background: rgba(15, 52, 96, 0.3);
             border-radius: 15px;
@@ -343,7 +522,7 @@
         }
 
         .comparison-card {
-            background: var(--bg-color);
+            background: var(--bg-tertiary);
             padding: 20px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
@@ -373,17 +552,6 @@
             color: #74b9ff;
         }
 
-        .comparison-card.speedup .comparison-header {
-            color: #fab1a0;
-        }
-
-        .comparison-stat {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-        }
-
         .comparison-card.speedup {
             background: linear-gradient(135deg, #e94560 0%, #a33b91 100%);
             border: none;
@@ -392,6 +560,13 @@
         .comparison-card.speedup .comparison-header {
             color: white;
             border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .comparison-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95em;
         }
 
         .speedup-value {
@@ -410,7 +585,7 @@
         }
 
         .details-section {
-            background: var(--bg-color);
+            background: var(--bg-tertiary);
             padding: 20px;
             border-radius: 15px;
             max-height: 300px;
@@ -439,56 +614,6 @@
             border-bottom: none;
         }
 
-        .success {
-            background: rgba(0, 184, 148, 0.15);
-            color: var(--success);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid var(--success);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .error {
-            background: rgba(255, 118, 117, 0.15);
-            color: var(--error);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid var(--error);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .loading {
-            text-align: center;
-            font-size: 1.2em;
-            color: var(--text-primary);
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--input-bg);
-            border-top: 5px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px auto;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -501,281 +626,793 @@
             }
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .media-tabs {
+                flex-wrap: wrap;
             }
 
-            to {
-                opacity: 1;
+            .media-tab {
+                flex: 1 1 50%;
             }
-        }
 
-        /* Dynamic Inputs */
-        .add-path-btn {
-            background: transparent;
-            border: 2px dashed var(--border-color);
-            color: var(--text-secondary);
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 15px;
-        }
-
-        .add-path-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: rgba(15, 52, 96, 0.3);
-        }
-
-        .input-remove-btn {
-            background: none;
-            border: none;
-            color: var(--error);
-            cursor: pointer;
-            font-size: 1.2em;
-            padding: 0 10px;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--input-bg);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
+            .sub-tabs {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1 class="logo"><i class="fas fa-layer-group"></i> StreamBit</h1>
+            <div class="logo">
+                <i class="fas fa-layer-group"></i> StreamBit
+            </div>
             <div class="subtitle">High-Performance AI Data Pipeline in Rust</div>
-            <div style="margin-top: 15px;">
-                <span
-                    style="background: rgba(15, 52, 96, 0.5); padding: 5px 15px; border-radius: 20px; font-size: 0.9em; color: var(--accent);">
-                    v0.1.0-alpha
-                </span>
+            <span class="version-badge">v0.1.0-alpha • Vision Complete</span>
+        </div>
+
+        <!-- Main Card -->
+        <div class="main-card">
+            <!-- Media Type Tabs -->
+            <div class="media-tabs">
+                <button class="media-tab active" onclick="switchMedia('vision')">
+                    <i class="fas fa-image"></i> 📸 Vision
+                </button>
+                <button class="media-tab" onclick="switchMedia('audio')">
+                    <i class="fas fa-music"></i> 🎵 Audio
+                </button>
+                <button class="media-tab" disabled>
+                    <i class="fas fa-video"></i> 🎬 Video
+                    <span class="soon-badge">Soon</span>
+                </button>
+                <button class="media-tab" disabled>
+                    <i class="fas fa-file-alt"></i> 📄 Text
+                    <span class="soon-badge">Soon</span>
+                </button>
+            </div>
+
+            <!-- Vision Module -->
+            <div id="vision-module">
+                <!-- Vision Sub-Tabs -->
+                <div class="sub-tabs">
+                    <button class="sub-tab active" onclick="switchTab('upload')">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload
+                    </button>
+                    <button class="sub-tab" onclick="switchTab('process')">
+                        <i class="fas fa-magic"></i> Process
+                    </button>
+                    <button class="sub-tab" onclick="switchTab('batch')">
+                        <i class="fas fa-layer-group"></i> Batch
+                    </button>
+                    <button class="sub-tab" onclick="switchTab('benchmark')">
+                        <i class="fas fa-chart-line"></i> Benchmark
+                    </button>
+                </div>
+
+                <!-- Upload Tab -->
+                <div id="upload-tab" class="tab-content active">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Drag & Drop Images or Click to Browse</div>
+                        <div class="upload-hint">Supports: JPG, PNG, WebP, GIF, BMP</div>
+                        <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+                    </div>
+
+                    <!-- Selected Files List with Scroll -->
+                    <div
+                        style="max-height: 300px; overflow-y: auto; margin-top: 20px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; border: 1px solid var(--border-color);">
+                        <div id="fileList"></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="processImages()" id="processBtn" disabled
+                        style="width: 100%; margin-top: 20px;">
+                        <i class="fas fa-bolt"></i> Process Images
+                    </button>
+
+                    <!-- Results Section -->
+                    <div id="results" style="margin-top: 30px; display: none;"></div>
+                </div>
+
+                <!-- Process Tab -->
+                <div id="process-tab" class="tab-content">
+                    <div class="form-group">
+                        <label class="form-label">Upload Images</label>
+                        <input type="file" id="processFileInput" class="form-input" accept="image/*" multiple>
+                    </div>
+
+                    <!-- Selected Images List -->
+                    <div id="processFileList"
+                        style="max-height: 200px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; border: 1px solid var(--border-color);">
+                    </div>
+
+                    <!-- Enhancements -->
+                    <div class="section-card" style="border-left-color: #00ff88;">
+                        <div class="section-title" style="color: #00ff88;">
+                            <i class="fas fa-palette"></i> Enhancements
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Brightness: <span id="brightnessVal">1.0</span></label>
+                            <input type="range" id="brightnessSlider" min="0.5" max="2.0" step="0.1" value="1.0"
+                                oninput="document.getElementById('brightnessVal').textContent = this.value">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Contrast: <span id="contrastVal">1.0</span></label>
+                            <input type="range" id="contrastSlider" min="0.5" max="2.0" step="0.1" value="1.0"
+                                oninput="document.getElementById('contrastVal').textContent = this.value">
+                        </div>
+
+                        <div class="grid grid-3">
+                            <button class="btn btn-secondary" id="rotateBtn">
+                                <i class="fas fa-redo"></i> Rotate 90°
+                            </button>
+                            <button class="btn btn-secondary" id="flipHBtn">
+                                <i class="fas fa-arrows-alt-h"></i> Flip H
+                            </button>
+                            <button class="btn btn-secondary" id="flipVBtn">
+                                <i class="fas fa-arrows-alt-v"></i> Flip V
+                            </button>
+                            <button class="btn btn-secondary" id="grayscaleBtn">
+                                <i class="fas fa-adjust"></i> Grayscale
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="section-card" style="border-left-color: #00d4ff;">
+                        <div class="section-title" style="color: #00d4ff;">
+                            <i class="fas fa-filter"></i> Filters
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Blur: <span id="blurVal">0</span></label>
+                            <input type="range" id="blurSlider" min="0" max="10" step="0.5" value="0"
+                                oninput="document.getElementById('blurVal').textContent = this.value">
+                        </div>
+
+                        <div class="grid grid-2">
+                            <button class="btn btn-secondary" id="sharpenBtn">
+                                <i class="fas fa-adjust"></i> Sharpen
+                            </button>
+                            <button class="btn btn-secondary" id="edgeDetectBtn">
+                                <i class="fas fa-border-style"></i> Edge Detect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="section-card" style="border-left-color: #7000ff;">
+                        <div class="section-title" style="color: #7000ff;">
+                            <i class="fas fa-bolt"></i> Quick Actions
+                        </div>
+
+                        <div class="grid grid-2">
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-balance-scale"></i> Normalize
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fas fa-star"></i> Auto-Enhance
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="applyProcessing()" id="applyProcessBtn" disabled
+                        style="width: 100%;">
+                        <i class="fas fa-magic"></i> Apply & Preview
+                    </button>
+
+                    <!-- Results Section for Process -->
+                    <div id="process-results" style="margin-top: 30px; display: none;"></div>
+                </div>
+
+                <!-- Batch Tab -->
+                <div id="batch-tab" class="tab-content">
+                    <div style="padding: 20px;">
+                        <div style="margin-bottom: 20px; text-align: center;">
+                            <div style="font-size: 1.3em; color: var(--text-primary); margin-bottom: 10px;">
+                                <i class="fas fa-folder-open"></i> Enter Folder Paths
+                            </div>
+                            <div style="color: var(--text-secondary);">
+                                Add multiple folder paths to process sequentially
+                            </div>
+                        </div>
+
+                        <div id="pathInputsContainer">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <i class="fas fa-folder" style="color: var(--accent-primary); font-size: 1.2em;"></i>
+                                <input type="text" id="folder-path" class="form-input folder-input"
+                                    placeholder="C:\Users\YourName\Pictures" style="flex: 1;">
+                            </div>
+                        </div>
+
+                        <button onclick="addPathInput()"
+                            style="width: 100%; background: transparent; border: 2px dashed var(--border-color); color: var(--text-secondary); padding: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s; margin-bottom: 15px;">
+                            <i class="fas fa-plus"></i> Add Another Folder
+                        </button>
+
+                        <button onclick="processFromPath()" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-bolt"></i> Process All Folders
+                        </button>
+
+                        <!-- Results Section for Batch -->
+                        <div id="batch-results" style="margin-top: 30px; display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- Benchmark Tab -->
+                <div id="benchmark-tab" class="tab-content">
+                    <div
+                        style="padding: 20px; background: var(--bg-tertiary); border-radius: 12px; border: 1px solid var(--border-color);">
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;">
+                            <h2
+                                style="margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5em;">🍃</span> Hugging Face Benchmark
+                            </h2>
+                            <span
+                                style="background: #FFD700; color: #000; padding: 6px 12px; border-radius: 6px; font-weight: bold;">New</span>
+                        </div>
+
+                        <div
+                            style="background: rgba(15, 52, 96, 0.4); padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid var(--accent-primary);">
+                            <p style="color: var(--text-primary); margin: 0; font-size: 1.1em;">
+                                Download standard datasets directly from Hugging Face to test StreamBit's true speed.
+                            </p>
+                        </div>
+
+                        <div
+                            style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+                            <div style="flex: 2; min-width: 200px;">
+                                <label
+                                    style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Dataset</label>
+                                <select id="dataset-select"
+                                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 1em;">
+                                    <option value="beans">Beans (Leaf Images) - Standard Benchmark</option>
+                                </select>
+                            </div>
+
+                            <div style="flex: 1; min-width: 120px;">
+                                <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Image
+                                    Count</label>
+                                <select id="limit-select"
+                                    style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 1em;">
+                                    <option value="100">100 Images</option>
+                                    <option value="500">500 Images</option>
+                                    <option value="1000">1000 Images</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="download-btn" onclick="downloadDataset()"
+                            style="width: 100%; background: linear-gradient(135deg, #48BB78 0%, #38A169 100%); color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.1em; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                            <i class="fas fa-download"></i> Download & Test
+                        </button>
+
+                        <div id="download-status"
+                            style="margin-top: 20px; font-size: 1em; display: none; padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.2);">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- New Features Banner -->
-        <div class="card"
-            style="background: linear-gradient(135deg, rgba(15, 52, 96, 0.6) 0%, rgba(233, 69, 96, 0.3) 100%); border: 2px solid var(--accent); margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                <span style="font-size: 2em;">✨</span>
-                <div>
-                    <h2 style="margin: 0; color: var(--text-primary); font-size: 1.5em;">Vision Module Complete!</h2>
-                    <p style="margin: 5px 0 0 0; color: var(--text-secondary);">Advanced image processing features now
-                        available</p>
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-                <div
-                    style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; border-left: 3px solid #48BB78;">
-                    <div style="font-size: 1.3em; margin-bottom: 5px;">🎨 Enhancements</div>
-                    <div style="font-size: 0.9em; color: var(--text-secondary);">Brightness, Contrast, Rotation, Flip,
-                        Crop, Grayscale</div>
-                </div>
-
-                <div
-                    style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; border-left: 3px solid #4299E1;">
-                    <div style="font-size: 1.3em; margin-bottom: 5px;">🔍 Filters</div>
-                    <div style="font-size: 0.9em; color: var(--text-secondary);">Blur, Sharpen, Edge Detection, Emboss
-                    </div>
-                </div>
-
-                <div
-                    style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; border-left: 3px solid #9F7AEA;">
-                    <div style="font-size: 1.3em; margin-bottom: 5px;">⚡ Batch Ops</div>
-                    <div style="font-size: 0.9em; color: var(--text-secondary);">Watermark, Normalize, Auto-Enhance
-                    </div>
-                </div>
-            </div>
-
-            <div
-                style="margin-top: 15px; padding: 12px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; border: 1px solid rgba(255, 215, 0, 0.3);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.2em;">📚</span>
-                    <span style="color: var(--text-primary);">Check <strong>USAGE.md</strong> for code examples and CLI
-                        usage</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="upload" onclick="switchTab('upload')">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Files
+        <!-- Audio Module -->
+        <div id="audio-module" style="display: none;">
+            <!-- Audio Sub-Tabs -->
+            <div class="sub-tabs">
+                <button class="sub-tab active" onclick="switchTab('audio-upload')">
+                    <i class="fas fa-upload"></i> Upload
                 </button>
-                <button class="tab-btn" data-tab="folder" onclick="switchTab('folder')">
-                    <i class="fas fa-folder-open"></i> Select Folders
-                </button>
-                <button class="tab-btn" data-tab="benchmark" onclick="switchTab('benchmark')">
-                    <i class="fas fa-database"></i> Hugging Face
+                <button class="sub-tab" onclick="switchTab('audio-benchmark')">
+                    <i class="fas fa-database"></i> Benchmark
                 </button>
             </div>
 
-            <div id="upload-tab" class="tab-content active">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
+            <!-- Audio Upload Tab -->
+            <div id="audio-upload-tab" class="tab-content active">
+                <div class="section-card" style="border-left-color: #00d4ff;">
+                    <div class="section-title" style="color: #00d4ff;">
+                        <i class="fas fa-music"></i> Audio Processing
                     </div>
-                    <div class="upload-text">Drag & Drop Images Here or Click to Browse</div>
-                    <div class="upload-hint">Supports: JPG, PNG, WebP, GIF, BMP</div>
-                    <input type="file" id="fileInput" multiple accept="image/*">
+
+                    <div class="form-group">
+                        <label class="form-label">Select Audio Files</label>
+                        <input type="file" id="audioFileInput" accept="audio/*" multiple
+                            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
+                    </div>
+
+                    <div id="audioFileList"
+                        style="max-height: 200px; overflow-y: auto; margin-bottom: 20px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; border: 1px solid var(--border-color);">
+                    </div>
+
+                    <button id="processAudioBtn" onclick="processAudioFiles()" disabled
+                        style="width: 100%; background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.1em; font-weight: bold;">
+                        <i class="fas fa-play"></i> Process Audio
+                    </button>
+
+                    <div id="audio-results" style="margin-top: 25px; display: none;"></div>
                 </div>
-
-                <div class="file-list" id="fileList"></div>
-
-                <button class="process-btn" id="processBtn" disabled>
-                    <i class="fas fa-bolt"></i>Process Images
-                </button>
             </div>
 
-            <div id="benchmark-tab" class="tab-content">
-                <div class="benchmark-section"
-                    style="padding: 20px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
-                    <div
-                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;">
-                        <h2
-                            style="margin: 0; color: var(--text-primary); display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 1.5em;">🍃</span> Hugging Face Benchmark
-                        </h2>
-                        <span class="badge"
-                            style="background: #FFD700; color: #000; padding: 6px 12px; border-radius: 6px; font-weight: bold;">New</span>
+            <!-- Audio Benchmark Tab -->
+            <div id="audio-benchmark-tab" class="tab-content">
+                <div class="section-card" style="border-left-color: #00ff88;">
+                    <div class="section-title" style="color: #00ff88;">
+                        <i class="fas fa-database"></i> Download Audio Dataset
                     </div>
 
-                    <div
-                        style="background: rgba(15, 52, 96, 0.4); padding: 20px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid var(--accent);">
-                        <p style="color: var(--text-primary); margin: 0; font-size: 1.1em;">
-                            Download standard datasets directly from Hugging Face to test StreamBit's true speed.
-                        </p>
-                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                        Download audio samples from Hugging Face for testing
+                    </p>
 
-                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
-                        <div style="flex: 2; min-width: 200px;">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 2;">
                             <label
                                 style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Dataset</label>
-                            <select id="dataset-select"
-                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 1em;">
-                                <option value="beans">Beans (Leaf Images) - Standard Benchmark</option>
+                            <select id="audio-dataset-select"
+                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 1em;">
+                                <option value="PolyAI/minds14">MINDS-14 (Speech Commands)</option>
+                                <option value="common_voice">Common Voice</option>
                             </select>
                         </div>
-
                         <div style="flex: 1; min-width: 120px;">
-                            <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Image
+                            <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);">Audio
                                 Count</label>
-                            <select id="limit-select"
-                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); font-size: 1em;">
-                                <option value="100">100 Images</option>
-                                <option value="500">500 Images</option>
-                                <option value="1000">1000 Images</option>
+                            <select id="audio-limit-select"
+                                style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); font-size: 1em;">
+                                <option value="10">10 Files</option>
+                                <option value="50">50 Files</option>
+                                <option value="100">100 Files</option>
                             </select>
                         </div>
                     </div>
 
-                    <button id="download-btn" onclick="downloadDataset()"
-                        style="width: 100%; background: linear-gradient(135deg, #48BB78 0%, #38A169 100%); color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.1em; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">
+                    <button id="download-audio-btn" onclick="downloadAudioDataset()"
+                        style="width: 100%; background: linear-gradient(135deg, #48BB78 0%, #38A169 100%); color: white; padding: 15px; border-radius: 10px; border: none; cursor: pointer; transition: all 0.3s; font-size: 1.1em; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <i class="fas fa-download"></i> Download & Test
                     </button>
 
-                    <div id="download-status"
+                    <div id="download-audio-status"
                         style="margin-top: 20px; font-size: 1em; display: none; padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.2);">
                     </div>
                 </div>
             </div>
-
-            <div id="folder-tab" class="tab-content">
-                <div class="folder-input-area">
-                    <div class="path-input-box">
-                        <div class="picker-text" style="margin-bottom: 20px;">
-                            <i class="fas fa-folder-open"></i> Enter Folder Paths
-                        </div>
-
-                        <div class="picker-hint" style="margin-bottom: 20px;">
-                            Add multiple folder paths to process sequentially
-                        </div>
-
-                        <div id="pathInputsContainer">
-
-
-                            <div class="input-group">
-                                <i class="fas fa-folder"></i>
-                                <input type="text" id="folder-path" class="folder-input"
-                                    placeholder="C:\Users\YourName\Pictures">
-                            </div>
-                        </div>
-
-                        <button class="add-path-btn" onclick="addPathInput()">
-                            <i class="fas fa-plus"></i> Add Another Folder
-                        </button>
-
-                        <button class="process-btn" onclick="processFromPath()">
-                            <i class="fas fa-bolt"></i> Process All Folders
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="results" id="results"></div>
         </div>
     </div>
 
     <script>
+        function switchMedia(media) {
+            document.querySelectorAll('.media-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.media-tab').classList.add('active');
+
+            // Show/hide modules
+            document.getElementById('vision-module').style.display = media === 'vision' ? 'block' : 'none';
+            document.getElementById('audio-module').style.display = media === 'audio' ? 'block' : 'none';
+        }
+
         function switchTab(tab) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
+            document.querySelectorAll('.sub-tab').forEach(btn => {
                 btn.classList.remove('active');
-                if (btn.dataset.tab === tab) {
-                    btn.classList.add('active');
-                }
+            });
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        let selectedFiles = [];
+
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--accent-primary)';
             });
 
-            // Update tab content
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'var(--border-color)';
+            });
 
-            // Clear results
-            results.classList.remove('show');
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--border-color)';
+                handleFiles(e.dataTransfer.files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            selectedFiles = Array.from(files);
+            displayFiles();
+
+            const processBtn = document.getElementById('processBtn');
+            if (processBtn) {
+                processBtn.disabled = selectedFiles.length === 0;
+            }
+        }
+
+        function displayFiles() {
+            const fileList = document.getElementById('fileList');
+            if (!fileList) return;
+
+            fileList.innerHTML = '';
+
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: var(--text-secondary);">
+                        <i class="fas fa-images" style="font-size: 3em; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <div>No images selected</div>
+                    </div>
+                `;
+                return;
+            }
+
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas fa-file-image"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeFile(${index})">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFiles();
+
+            const processBtn = document.getElementById('processBtn');
+            if (processBtn) {
+                processBtn.disabled = selectedFiles.length === 0;
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        async function processImages() {
+            if (selectedFiles.length === 0) {
+                showResults('error', 'Please select images first');
+                return;
+            }
+
+            const processBtn = document.getElementById('processBtn');
+            const results = document.getElementById('results');
+
+            processBtn.disabled = true;
+            processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            results.style.display = 'block';
+            results.innerHTML = `
+                <div style="text-align: center; padding: 30px; background: rgba(0, 212, 255, 0.1); border-radius: 12px; border: 1px solid var(--accent-primary);">
+                    <div style="font-size: 3em; margin-bottom: 15px;">
+                        <i class="fas fa-spinner fa-spin" style="color: var(--accent-primary);"></i>
+                    </div>
+                    <div style="font-size: 1.2em; color: var(--text-primary);">Processing ${selectedFiles.length} images...</div>
+                </div>
+            `;
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                results.innerHTML = `
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                        <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--error);">Connection error: ${error.message}</div>
+                    </div>
+                `;
+            } finally {
+                processBtn.disabled = false;
+                processBtn.innerHTML = '<i class="fas fa-bolt"></i> Process Images';
+            }
+        }
+
+        function displayResults(data) {
+            const results = document.getElementById('results');
+
+            if (data.success) {
+                let comparisonHTML = '';
+                if (data.python_time_ms && data.python_throughput) {
+                    const speedup = (data.python_time_ms / data.time_ms).toFixed(2);
+                    comparisonHTML = `
+                    <div class="comparison-section">
+                        <h3 class="details-title">
+                            <i class="fas fa-chart-bar"></i>Performance Comparison:
+                        </h3>
+                        <div class="comparison-grid">
+                            <div class="comparison-card rust">
+                                <div class="comparison-header">
+                                    <i class="fab fa-rust"></i> StreamBit (Rust)
+                                </div>
+                                <div class="comparison-stat">
+                                    <span>Time:</span>
+                                    <span>${data.time_ms.toFixed(2)} ms</span>
+                                </div>
+                                <div class="comparison-stat">
+                                    <span>Throughput:</span>
+                                    <span>${Math.round(data.throughput)} img/s</span>
+                                </div>
+                            </div>
+                            <div class="comparison-card python">
+                                <div class="comparison-header">
+                                    <i class="fab fa-python"></i> Python (Pillow)
+                                </div>
+                                <div class="comparison-stat">
+                                    <span>Time:</span>
+                                    <span>${data.python_time_ms.toFixed(2)} ms</span>
+                                </div>
+                                <div class="comparison-stat">
+                                    <span>Throughput:</span>
+                                    <span>${Math.round(data.python_throughput)} img/s</span>
+                                </div>
+                            </div>
+                            <div class="comparison-card speedup">
+                                <div class="comparison-header">
+                                    <i class="fas fa-rocket"></i> Speedup
+                                </div>
+                                <div class="speedup-value">${speedup}x</div>
+                                <div class="speedup-label">Faster than Python!</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }
+
+                results.innerHTML = `
+                <div class="success">
+                    <i class="fas fa-check-circle"></i>${data.message}
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-images"></i></div>
+                        <div class="stat-value">${data.images_processed}</div>
+                        <div class="stat-label">Images Processed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                        <div class="stat-value">${data.time_ms.toFixed(2)}</div>
+                        <div class="stat-label">Time (ms)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <div class="stat-value">${Math.round(data.throughput)}</div>
+                        <div class="stat-label">Images/Second</div>
+                    </div>
+                </div>
+                ${comparisonHTML}
+                <div class="details-section">
+                    <h3 class="details-title">
+                        <i class="fas fa-info-circle"></i>Processing Details:
+                    </h3>
+                    ${data.shapes.map((shape, i) => `
+                        <div class="result-item">
+                            <span><i class="fas fa-image"></i> Image ${i + 1}</span>
+                            <span>Shape: [${shape.join(', ')}]</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            } else {
+                results.innerHTML = `
+                <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                    <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div style="font-size: 1.2em; color: var(--error);">${data.message}</div>
+                </div>
+            `;
+            }
         }
 
         function addPathInput() {
             const container = document.getElementById('pathInputsContainer');
             const div = document.createElement('div');
-            div.className = 'input-group';
+            div.style.cssText = 'display: flex; align-items: center; gap: 10px; margin-bottom: 15px;';
             div.innerHTML = `
-                <i class="fas fa-folder"></i>
-                <input type="text" class="folder-input" placeholder="C:\\Users\\YourName\\Pictures">
-                <button class="input-remove-btn" onclick="this.parentElement.remove()">
+                <i class="fas fa-folder" style="color: var(--accent-primary); font-size: 1.2em;"></i>
+                <input type="text" class="form-input folder-input" placeholder="C:\\Users\\YourName\\Pictures" style="flex: 1;">
+                <button onclick="this.parentElement.remove()" style="padding: 8px 15px; background: rgba(255, 51, 102, 0.1); border: 1px solid var(--error); border-radius: 6px; color: var(--error); cursor: pointer;">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             container.appendChild(div);
         }
 
+        async function processFromPath() {
+            const inputs = document.querySelectorAll('.folder-input');
+            const paths = Array.from(inputs).map(input => input.value.trim()).filter(p => p);
+            const results = document.getElementById('batch-results');
+
+            if (paths.length === 0) {
+                results.style.display = 'block';
+                results.innerHTML = `
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                        <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--error);">Please enter at least one folder path</div>
+                    </div>
+                `;
+                return;
+            }
+
+            results.style.display = 'block';
+            results.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">
+                        <i class="fas fa-spinner fa-spin" style="color: var(--accent-primary);"></i>
+                    </div>
+                    <div style="font-size: 1.2em; color: var(--text-primary);">Processing images from ${paths.length} folder(s)...</div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/process-folder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ paths: paths })
+                });
+
+                const data = await response.json();
+
+                // Use the same displayResults function but target batch-results
+                if (data.success) {
+                    let comparisonHTML = '';
+                    if (data.python_time_ms && data.python_throughput) {
+                        const speedup = (data.python_time_ms / data.time_ms).toFixed(2);
+                        comparisonHTML = `
+                        <div class="comparison-section">
+                            <h3 class="details-title">
+                                <i class="fas fa-chart-bar"></i>Performance Comparison:
+                            </h3>
+                            <div class="comparison-grid">
+                                <div class="comparison-card rust">
+                                    <div class="comparison-header">
+                                        <i class="fab fa-rust"></i> StreamBit (Rust)
+                                    </div>
+                                    <div class="comparison-stat">
+                                        <span>Time:</span>
+                                        <span>${data.time_ms.toFixed(2)} ms</span>
+                                    </div>
+                                    <div class="comparison-stat">
+                                        <span>Throughput:</span>
+                                        <span>${Math.round(data.throughput)} img/s</span>
+                                    </div>
+                                </div>
+                                <div class="comparison-card python">
+                                    <div class="comparison-header">
+                                        <i class="fab fa-python"></i> Python (Pillow)
+                                    </div>
+                                    <div class="comparison-stat">
+                                        <span>Time:</span>
+                                        <span>${data.python_time_ms.toFixed(2)} ms</span>
+                                    </div>
+                                    <div class="comparison-stat">
+                                        <span>Throughput:</span>
+                                        <span>${Math.round(data.python_throughput)} img/s</span>
+                                    </div>
+                                </div>
+                                <div class="comparison-card speedup">
+                                    <div class="comparison-header">
+                                        <i class="fas fa-rocket"></i> Speedup
+                                    </div>
+                                    <div class="speedup-value">${speedup}x</div>
+                                    <div class="speedup-label">Faster than Python!</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    }
+
+                    results.innerHTML = `
+                    <div class="success">
+                        <i class="fas fa-check-circle"></i>${data.message}
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-images"></i></div>
+                            <div class="stat-value">${data.images_processed}</div>
+                            <div class="stat-label">Images Processed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-value">${data.time_ms.toFixed(2)}</div>
+                            <div class="stat-label">Time (ms)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <div class="stat-value">${Math.round(data.throughput)}</div>
+                            <div class="stat-label">Images/Second</div>
+                        </div>
+                    </div>
+                    ${comparisonHTML}
+                    <div class="details-section">
+                        <h3 class="details-title">
+                            <i class="fas fa-info-circle"></i>Processing Details:
+                        </h3>
+                        ${data.shapes.map((shape, i) => `
+                            <div class="result-item">
+                                <span><i class="fas fa-image"></i> Image ${i + 1}</span>
+                                <span>Shape: [${shape.join(', ')}]</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                } else {
+                    results.innerHTML = `
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                        <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--error);">${data.message}</div>
+                    </div>
+                `;
+                }
+            } catch (error) {
+                results.innerHTML = `
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                        <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--error);">Connection error: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
         async function downloadDataset() {
             const btn = document.getElementById('download-btn');
             const status = document.getElementById('download-status');
-            const pathInput = document.getElementById('folder-path');
+            const pathInput = document.querySelector('#batch-tab .form-input[type="text"]');
             const limit = document.getElementById('limit-select').value;
             const dataset = document.getElementById('dataset-select').value;
 
             btn.disabled = true;
-            btn.innerHTML = `<span class="spinner"></span> Downloading...`;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
             status.style.display = 'block';
             status.style.color = 'var(--text-secondary)';
             status.innerText = 'Connecting to Hugging Face...';
@@ -806,13 +1443,13 @@
                         setTimeout(() => pathInput.style.borderColor = '', 1000);
                     }
 
-                    // Switch to folder tab after small delay
+                    // Switch to batch tab after small delay
                     setTimeout(() => {
-                        switchTab('folder');
+                        switchTab('batch');
                     }, 1500);
 
                     // Reset button
-                    btn.innerHTML = '⬇️ Download & Test';
+                    btn.innerHTML = '<i class="fas fa-download"></i> Download & Test';
                     btn.disabled = false;
 
                 } else {
@@ -823,49 +1460,119 @@
                 console.error(error);
                 status.style.color = '#F56565';
                 status.innerText = `❌ Error: ${error.message}`;
-                btn.innerHTML = '⬇️ Download & Test';
+                btn.innerHTML = '<i class="fas fa-download"></i> Download & Test';
                 btn.disabled = false;
             }
         }
 
-        async function processFromPath() {
-            const inputs = document.querySelectorAll('.folder-input');
-            const paths = Array.from(inputs).map(input => input.value.trim()).filter(p => p);
+        // Process Tab - File handling
+        let processFiles = [];
+        const processFileInput = document.getElementById('processFileInput');
+        const processFileList = document.getElementById('processFileList');
+        const applyProcessBtn = document.getElementById('applyProcessBtn');
 
-            if (paths.length === 0) {
-                alert('Please enter at least one folder path');
+        if (processFileInput) {
+            processFileInput.addEventListener('change', (e) => {
+                processFiles = Array.from(e.target.files);
+                displayProcessFiles();
+            });
+        }
+
+        function displayProcessFiles() {
+            if (!processFileList) return;
+
+            processFileList.innerHTML = '';
+
+            if (processFiles.length === 0) {
+                processFileList.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        <i class="fas fa-images" style="font-size: 2em; margin-bottom: 10px; opacity: 0.3;"></i>
+                        <div>No images selected</div>
+                    </div>
+                `;
+                if (applyProcessBtn) applyProcessBtn.disabled = true;
                 return;
             }
 
-            results.innerHTML = '<div class="loading"><div class="spinner"></div><div>Processing images from ' + paths.length + ' folders...</div></div>';
-            results.classList.add('show');
+            processFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">
+                        <i class="fas fa-file-image"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button class="remove-btn" onclick="removeProcessFile(${index})">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                `;
+                processFileList.appendChild(fileItem);
+            });
+
+            if (applyProcessBtn) applyProcessBtn.disabled = false;
+        }
+
+        function removeProcessFile(index) {
+            processFiles.splice(index, 1);
+            displayProcessFiles();
+        }
+
+        async function applyProcessing() {
+            if (processFiles.length === 0) return;
+
+            const results = document.getElementById('process-results');
+
+            if (applyProcessBtn) {
+                applyProcessBtn.disabled = true;
+                applyProcessBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+
+            results.style.display = 'block';
+            results.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">
+                        <i class="fas fa-spinner fa-spin" style="color: var(--accent-primary);"></i>
+                    </div>
+                    <div style="font-size: 1.2em; color: var(--text-primary);">Applying filters to ${processFiles.length} image(s)...</div>
+                </div>
+            `;
+
+            const formData = new FormData();
+            processFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            // Collect filter parameters
+            const filters = {
+                brightness: parseFloat(document.getElementById('brightnessSlider')?.value || 1.0),
+                contrast: parseFloat(document.getElementById('contrastSlider')?.value || 1.0),
+                blur: parseFloat(document.getElementById('blurSlider')?.value || 0),
+                flip_horizontal: document.getElementById('flipHBtn')?.classList.contains('active') || false,
+                flip_vertical: document.getElementById('flipVBtn')?.classList.contains('active') || false,
+                grayscale: document.getElementById('grayscaleBtn')?.classList.contains('active') || false,
+                sharpen: document.getElementById('sharpenBtn')?.classList.contains('active') || false,
+                edge_detect: document.getElementById('edgeDetectBtn')?.classList.contains('active') || false,
+            };
+
+            // Add filters as JSON blob
+            formData.append('filters', new Blob([JSON.stringify(filters)], { type: 'application/json' }));
 
             try {
-                const response = await fetch('/process-folder', {
+                const response = await fetch('/process-with-filters', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ paths: paths })
+                    body: formData
                 });
 
                 const data = await response.json();
-                displayResults(data);
-            } catch (error) {
-                results.innerHTML = `
-                    <div class="error">
-                        <i class="fas fa-exclamation-triangle"></i>Connection error: ${error.message}
-                    </div>
-                `;
-            }
-        }
 
-        function displayResults(data) {
-            if (data.success) {
-                let comparisonHTML = '';
-                if (data.python_time_ms && data.python_throughput) {
-                    const speedup = (data.python_time_ms / data.time_ms).toFixed(2);
-                    comparisonHTML = `
+                if (data.success) {
+                    let comparisonHTML = '';
+                    if (data.python_time_ms && data.python_throughput) {
+                        const speedup = (data.python_time_ms / data.time_ms).toFixed(2);
+                        comparisonHTML = `
                         <div class="comparison-section">
                             <h3 class="details-title">
                                 <i class="fas fa-chart-bar"></i>Performance Comparison:
@@ -876,12 +1583,12 @@
                                         <i class="fab fa-rust"></i> StreamBit (Rust)
                                     </div>
                                     <div class="comparison-stat">
-                                        <span class="stat-label">Time:</span>
-                                        <span class="stat-value">${data.time_ms.toFixed(2)} ms</span>
+                                        <span>Time:</span>
+                                        <span>${data.time_ms.toFixed(2)} ms</span>
                                     </div>
                                     <div class="comparison-stat">
-                                        <span class="stat-label">Throughput:</span>
-                                        <span class="stat-value">${Math.round(data.throughput)} img/s</span>
+                                        <span>Throughput:</span>
+                                        <span>${Math.round(data.throughput)} img/s</span>
                                     </div>
                                 </div>
                                 <div class="comparison-card python">
@@ -889,12 +1596,12 @@
                                         <i class="fab fa-python"></i> Python (Pillow)
                                     </div>
                                     <div class="comparison-stat">
-                                        <span class="stat-label">Time:</span>
-                                        <span class="stat-value">${data.python_time_ms.toFixed(2)} ms</span>
+                                        <span>Time:</span>
+                                        <span>${data.python_time_ms.toFixed(2)} ms</span>
                                     </div>
                                     <div class="comparison-stat">
-                                        <span class="stat-label">Throughput:</span>
-                                        <span class="stat-value">${Math.round(data.python_throughput)} img/s</span>
+                                        <span>Throughput:</span>
+                                        <span>${Math.round(data.python_throughput)} img/s</span>
                                     </div>
                                 </div>
                                 <div class="comparison-card speedup">
@@ -907,9 +1614,9 @@
                             </div>
                         </div>
                     `;
-                }
+                    }
 
-                results.innerHTML = `
+                    results.innerHTML = `
                     <div class="success">
                         <i class="fas fa-check-circle"></i>${data.message}
                     </div>
@@ -937,124 +1644,63 @@
                         </h3>
                         ${data.shapes.map((shape, i) => `
                             <div class="result-item">
-                                <span class="result-label">
-                                    <i class="fas fa-image"></i>Image ${i + 1}
-                                </span>
-                                <span class="result-value">Shape: [${shape.join(', ')}]</span>
+                                <span><i class="fas fa-image"></i> Image ${i + 1}</span>
+                                <span>Shape: [${shape.join(', ')}]</span>
                             </div>
                         `).join('')}
                     </div>
                 `;
-            } else {
-                results.innerHTML = `
-                    <div class="error">
-                        <i class="fas fa-exclamation-circle"></i>${data.message}
+                } else {
+                    results.innerHTML = `
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                        <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--error);">${data.message}</div>
                     </div>
                 `;
-            }
-        }
-
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const processBtn = document.getElementById('processBtn');
-        const results = document.getElementById('results');
-        let selectedFiles = [];
-
-        // Click to upload
-        uploadArea.addEventListener('click', () => fileInput.click());
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
-
-        // File input change
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
-
-        function handleFiles(files) {
-            selectedFiles = Array.from(files);
-            displayFiles();
-            processBtn.disabled = selectedFiles.length === 0;
-        }
-
-        function displayFiles() {
-            fileList.innerHTML = '';
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.innerHTML = `
-                    <div class="file-icon">
-                        <i class="fas fa-file-image"></i>
-                    </div>
-                    <div class="file-info">
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-size">${formatFileSize(file.size)}</div>
-                    </div>
-                    <button class="remove-btn" onclick="removeFile(${index})">
-                        <i class="fas fa-trash"></i> Remove
-                    </button>
-                `;
-                fileList.appendChild(fileItem);
-            });
-        }
-
-        function removeFile(index) {
-            selectedFiles.splice(index, 1);
-            displayFiles();
-            processBtn.disabled = selectedFiles.length === 0;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-        }
-
-        processBtn.addEventListener('click', async () => {
-            if (selectedFiles.length === 0) return;
-
-            processBtn.disabled = true;
-            results.innerHTML = '<div class="loading"><div class="spinner"></div><div>Processing images...</div></div>';
-            results.classList.add('show');
-
-            const formData = new FormData();
-            selectedFiles.forEach(file => {
-                formData.append('images', file);
-            });
-
-            try {
-                const response = await fetch('/process', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-                displayResults(data);
+                }
             } catch (error) {
                 results.innerHTML = `
-                    <div class="error">
-                        <i class="fas fa-exclamation-triangle"></i>Connection error: ${error.message}
+                    <div style="background: rgba(255, 51, 102, 0.1); padding: 25px; border-radius: 12px; border: 2px solid var(--error); text-align: center;">
+                        <div style="font-size: 3em; color: var(--error); margin-bottom: 15px;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div style="font-size: 1.2em; color: var(--error);">Connection error: ${error.message}</div>
                     </div>
                 `;
             } finally {
-                processBtn.disabled = false;
+                if (applyProcessBtn) {
+                    applyProcessBtn.disabled = false;
+                    applyProcessBtn.innerHTML = '<i class="fas fa-magic"></i> Apply & Preview';
+                }
+            }
+        }
+
+        // Filter button toggles
+        const filterButtons = ['flipHBtn', 'flipVBtn', 'grayscaleBtn', 'sharpenBtn', 'edgeDetectBtn'];
+        filterButtons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    if (this.classList.contains('active')) {
+                        this.style.background = 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)';
+                        this.style.color = 'white';
+                    } else {
+                        this.style.background = '';
+                        this.style.color = '';
+                    }
+                });
             }
         });
+
+        // Initialize empty state
+        displayFiles();
+        displayProcessFiles();
     </script>
+    <script src="js/common.js"></script>
+    <script src="js/audio.js"></script>
 </body>
 
 </html>

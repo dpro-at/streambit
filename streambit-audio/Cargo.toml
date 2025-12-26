@@ -1,0 +1,12 @@
+[package]
+name = "streambit-audio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+streambit-core = { path = "../streambit-core" }
+symphonia = "0.5"
+rubato = "0.15"
+hound = "3.5"
+ndarray = "0.16"
+thiserror = "1.0"

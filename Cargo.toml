@@ -5,7 +5,7 @@ members = [
     "streambit-vision",
     "streambit-web-ui",
     "streambit-cli",
-    # "streambit-audio",      # TODO: Not implemented yet
+    "streambit-audio",
     # "streambit-text",       # TODO: Not implemented yet
     # "streambit-tabular",    # TODO: Not implemented yet
     # "streambit-streaming",  # TODO: Not implemented yet

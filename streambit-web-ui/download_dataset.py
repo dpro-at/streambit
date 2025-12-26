@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 import shutil
 
-def download_image_dataset(dataset_name="beans", split="train", limit=100, output_dir="benchmarks/data/images"):
+def download_image_dataset(dataset_name="beans", split="train", limit=100, output_dir="output/datasets/images"):
     print(f"[INFO] Downloading {limit} images from dataset '{dataset_name}'...")
     
     # Clean up old directory to save space
@@ -51,12 +51,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download benchmark dataset")
     parser.add_argument("--limit", type=int, default=100, help="Number of images to download")
     parser.add_argument("--dataset", type=str, default="beans", help="Dataset name")
-    parser.add_argument("--output", type=str, default="benchmarks/data/images", help="Output directory")
+    parser.add_argument("--output", type=str, default="output/datasets/images", help="Output directory")
     
     args = parser.parse_args()
     
-    # Create benchmarks directory if it doesn't exist
-    if not os.path.exists("benchmarks"):
-        os.makedirs("benchmarks")
-        
     download_image_dataset(limit=args.limit, dataset_name=args.dataset, output_dir=args.output)
